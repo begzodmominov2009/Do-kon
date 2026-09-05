@@ -1,0 +1,124 @@
+{
+  "common": {
+    "siteName": "Do'kon",
+    "searchPlaceholder": "Qidiruv...",
+    "currency": "so'm",
+    "viewAll": "Barchasi"
+  },
+  "nav": {
+    "home": "Bosh sahifa",
+    "catalog": "Katalog",
+    "favorites": "Sevimlilar",
+    "cart": "Savat",
+    "profile": "Profil"
+  },
+  "home": {
+    "title": "Bosh sahifa",
+    "promoBanner": {
+      "label": "Maxsus taklif"
+    },
+    "categories": {
+      "title": "Kategoriyalar",
+      "electronics": "Elektronika",
+      "fashion": "Kiyim",
+      "home": "Uy uchun",
+      "beauty": "Go'zallik"
+    },
+    "recommended": {
+      "title": "Siz uchun tavsiya"
+    },
+    "sale": {
+      "title": "Chegirmalar",
+      "subtitle": "Bugungi maxsus narxlar"
+    }
+  },
+  "catalog": {
+    "title": "Katalog"
+  },
+  "cart": {
+    "title": "Savat",
+    "itemsSuffix": "ta mahsulot",
+    "sectionProducts": "Mahsulotlar",
+    "addMore": {
+      "title": "Yana qo'shing"
+    },
+    "empty": {
+      "title": "Savat bo'sh",
+      "description": "Yoqqan mahsulotlarni savatga qo'shing",
+      "cta": "Xarid qilishni boshlash"
+    },
+    "suggestions": {
+      "title": "Ehtimol yoqadi"
+    },
+    "promo": {
+      "placeholder": "Promokod",
+      "apply": "Qo'llash",
+      "appliedSuffix": "qo'llandi",
+      "cancel": "Bekor qilish",
+      "invalid": "Noto'g'ri promokod"
+    },
+    "sections": {
+      "delivery": "Yetkazib berish turi",
+      "payment": "To'lov usuli",
+      "contact": "Aloqa ma'lumotlari",
+      "promo": "Promokod"
+    },
+    "delivery": {
+      "priceLabel": "Narx",
+      "bts": {
+        "title": "BTS pochta orqali",
+        "description": "O'zingizga yaqin bo'lgan BTS pochtasi (o'rtacha 35 000 so'm)"
+      }
+    },
+    "payment": {
+      "card": {
+        "title": "Kartadan kartaga"
+      }
+    },
+    "contact": {
+      "fullName": "Qabul qiluvchi ismi",
+      "phone": "Telefon raqami",
+      "region": "Viloyat",
+      "district": "Tuman",
+      "districtPlaceholder": "Avval viloyatni tanlang",
+      "address": "Ko'cha, uy raqami",
+      "comment": "Izoh",
+      "commentPlaceholder": "Izoh (ixtiyoriy)",
+      "errors": {
+        "fullName": "Ismni kiriting (kamida 2 belgi)",
+        "phone": "Telefon raqamini to'liq kiriting",
+        "region": "Viloyatni tanlang",
+        "district": "Tumanni tanlang",
+        "address": "Manzilni kiriting"
+      }
+    },
+    "summary": {
+      "products": "Mahsulotlar",
+      "saved": "Tejaladi",
+      "promo": "Promokod chegirmasi",
+      "delivery": "Yetkazib berish",
+      "total": "Jami to'lov"
+    },
+    "clear": {
+      "button": "Savatni tozalash",
+      "title": "Savatni tozalashni xohlaysizmi?",
+      "description": "Barcha mahsulotlar savatdan o'chiriladi. Bu amalni bekor qilib bo'lmaydi.",
+      "cancel": "Bekor qilish",
+      "confirm": "Tozalash"
+    },
+    "checkout": "Buyurtma berish",
+    "checkoutToast": "Buyurtma qabul qilindi"
+  },
+  "favorites": {
+    "title": "Sevimlilar"
+  },
+  "profile": {
+    "title": "Profil"
+  },
+  "product": {
+    "add": "Savatga qo'shish",
+    "increase": "Miqdorni oshirish",
+    "decrease": "Miqdorni kamaytirish",
+    "favoriteToggle": "Sevimlilarga qo'shish"
+  }
+}

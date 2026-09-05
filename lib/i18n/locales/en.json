@@ -1,0 +1,124 @@
+{
+  "common": {
+    "siteName": "Shop",
+    "searchPlaceholder": "Search...",
+    "currency": "so'm",
+    "viewAll": "View all"
+  },
+  "nav": {
+    "home": "Home",
+    "catalog": "Catalog",
+    "favorites": "Favorites",
+    "cart": "Cart",
+    "profile": "Profile"
+  },
+  "home": {
+    "title": "Home",
+    "promoBanner": {
+      "label": "Special offer"
+    },
+    "categories": {
+      "title": "Categories",
+      "electronics": "Electronics",
+      "fashion": "Fashion",
+      "home": "Home",
+      "beauty": "Beauty"
+    },
+    "recommended": {
+      "title": "Recommended for you"
+    },
+    "sale": {
+      "title": "Discounts",
+      "subtitle": "Today's special prices"
+    }
+  },
+  "catalog": {
+    "title": "Catalog"
+  },
+  "cart": {
+    "title": "Cart",
+    "itemsSuffix": "items",
+    "sectionProducts": "Products",
+    "addMore": {
+      "title": "Add more"
+    },
+    "empty": {
+      "title": "Cart is empty",
+      "description": "Add items you like to the cart",
+      "cta": "Start shopping"
+    },
+    "suggestions": {
+      "title": "You might like"
+    },
+    "promo": {
+      "placeholder": "Promo code",
+      "apply": "Apply",
+      "appliedSuffix": "applied",
+      "cancel": "Cancel",
+      "invalid": "Invalid promo code"
+    },
+    "sections": {
+      "delivery": "Delivery method",
+      "payment": "Payment method",
+      "contact": "Contact details",
+      "promo": "Promo code"
+    },
+    "delivery": {
+      "priceLabel": "Price",
+      "bts": {
+        "title": "Via BTS post",
+        "description": "Your nearest BTS post office (avg. 35,000 so'm)"
+      }
+    },
+    "payment": {
+      "card": {
+        "title": "Card to card"
+      }
+    },
+    "contact": {
+      "fullName": "Recipient's name",
+      "phone": "Phone number",
+      "region": "Region",
+      "district": "District",
+      "districtPlaceholder": "Choose a region first",
+      "address": "Street, house number",
+      "comment": "Comment",
+      "commentPlaceholder": "Comment (optional)",
+      "errors": {
+        "fullName": "Enter a name (at least 2 characters)",
+        "phone": "Enter the full phone number",
+        "region": "Select a region",
+        "district": "Select a district",
+        "address": "Enter the address"
+      }
+    },
+    "summary": {
+      "products": "Products",
+      "saved": "You save",
+      "promo": "Promo discount",
+      "delivery": "Delivery",
+      "total": "Total payment"
+    },
+    "clear": {
+      "button": "Clear cart",
+      "title": "Clear the cart?",
+      "description": "All products will be removed from the cart. This can't be undone.",
+      "cancel": "Cancel",
+      "confirm": "Clear"
+    },
+    "checkout": "Place order",
+    "checkoutToast": "Order received"
+  },
+  "favorites": {
+    "title": "Favorites"
+  },
+  "profile": {
+    "title": "Profile"
+  },
+  "product": {
+    "add": "Add to cart",
+    "increase": "Increase quantity",
+    "decrease": "Decrease quantity",
+    "favoriteToggle": "Add to favorites"
+  }
+}

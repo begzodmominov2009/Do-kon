@@ -1,0 +1,124 @@
+{
+  "common": {
+    "siteName": "Магазин",
+    "searchPlaceholder": "Поиск...",
+    "currency": "сум",
+    "viewAll": "Все"
+  },
+  "nav": {
+    "home": "Главная",
+    "catalog": "Каталог",
+    "favorites": "Избранное",
+    "cart": "Корзина",
+    "profile": "Профиль"
+  },
+  "home": {
+    "title": "Главная",
+    "promoBanner": {
+      "label": "Специальное предложение"
+    },
+    "categories": {
+      "title": "Категории",
+      "electronics": "Электроника",
+      "fashion": "Одежда",
+      "home": "Для дома",
+      "beauty": "Красота"
+    },
+    "recommended": {
+      "title": "Рекомендуем для вас"
+    },
+    "sale": {
+      "title": "Скидки",
+      "subtitle": "Специальные цены сегодня"
+    }
+  },
+  "catalog": {
+    "title": "Каталог"
+  },
+  "cart": {
+    "title": "Корзина",
+    "itemsSuffix": "товара",
+    "sectionProducts": "Товары",
+    "addMore": {
+      "title": "Добавьте ещё"
+    },
+    "empty": {
+      "title": "Корзина пуста",
+      "description": "Добавьте понравившиеся товары в корзину",
+      "cta": "Начать покупки"
+    },
+    "suggestions": {
+      "title": "Вам может понравиться"
+    },
+    "promo": {
+      "placeholder": "Промокод",
+      "apply": "Применить",
+      "appliedSuffix": "применён",
+      "cancel": "Отменить",
+      "invalid": "Неверный промокод"
+    },
+    "sections": {
+      "delivery": "Способ доставки",
+      "payment": "Способ оплаты",
+      "contact": "Контактные данные",
+      "promo": "Промокод"
+    },
+    "delivery": {
+      "priceLabel": "Цена",
+      "bts": {
+        "title": "Через почту BTS",
+        "description": "Ближайшее к вам отделение BTS (в среднем 35 000 сум)"
+      }
+    },
+    "payment": {
+      "card": {
+        "title": "С карты на карту"
+      }
+    },
+    "contact": {
+      "fullName": "Имя получателя",
+      "phone": "Номер телефона",
+      "region": "Область",
+      "district": "Район",
+      "districtPlaceholder": "Сначала выберите область",
+      "address": "Улица, номер дома",
+      "comment": "Комментарий",
+      "commentPlaceholder": "Комментарий (необязательно)",
+      "errors": {
+        "fullName": "Введите имя (минимум 2 символа)",
+        "phone": "Введите номер телефона полностью",
+        "region": "Выберите область",
+        "district": "Выберите район",
+        "address": "Введите адрес"
+      }
+    },
+    "summary": {
+      "products": "Товары",
+      "saved": "Вы экономите",
+      "promo": "Скидка по промокоду",
+      "delivery": "Доставка",
+      "total": "Итого к оплате"
+    },
+    "clear": {
+      "button": "Очистить корзину",
+      "title": "Очистить корзину?",
+      "description": "Все товары будут удалены из корзины. Это действие нельзя отменить.",
+      "cancel": "Отмена",
+      "confirm": "Очистить"
+    },
+    "checkout": "Оформить заказ",
+    "checkoutToast": "Заказ принят"
+  },
+  "favorites": {
+    "title": "Избранное"
+  },
+  "profile": {
+    "title": "Профиль"
+  },
+  "product": {
+    "add": "В корзину",
+    "increase": "Увеличить количество",
+    "decrease": "Уменьшить количество",
+    "favoriteToggle": "В избранное"
+  }
+}
