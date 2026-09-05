@@ -3,7 +3,8 @@
     "siteName": "Магазин",
     "searchPlaceholder": "Поиск...",
     "currency": "сум",
-    "viewAll": "Все"
+    "viewAll": "Все",
+    "close": "Закрыть"
   },
   "nav": {
     "home": "Главная",
@@ -33,7 +34,34 @@
     }
   },
   "catalog": {
-    "title": "Каталог"
+    "title": "Каталог",
+    "categories": {
+      "all": "Все"
+    },
+    "sort": {
+      "newest": "Новинки",
+      "cheap": "Дешевле",
+      "expensive": "Дороже"
+    },
+    "filter": {
+      "button": "Фильтр",
+      "title": "Фильтр",
+      "priceRange": "Диапазон цен",
+      "priceFrom": "От",
+      "priceTo": "До",
+      "discountOnly": "Только со скидкой",
+      "inStockOnly": "Только в наличии",
+      "clear": "Сбросить",
+      "apply": "Применить"
+    },
+    "results": {
+      "title": "Все товары"
+    },
+    "empty": {
+      "title": "Ничего не найдено",
+      "description": "Попробуйте другой запрос или сбросьте фильтр",
+      "cta": "Сбросить фильтр"
+    }
   },
   "cart": {
     "title": "Корзина",
@@ -119,6 +147,35 @@
     "add": "В корзину",
     "increase": "Увеличить количество",
     "decrease": "Уменьшить количество",
-    "favoriteToggle": "В избранное"
+    "favoriteToggle": "В избранное",
+    "back": "Назад",
+    "goToCart": "Перейти в корзину",
+    "previousImage": "Предыдущее фото",
+    "nextImage": "Следующее фото",
+    "showMore": "Подробнее",
+    "showLess": "Свернуть",
+    "savingsPrefix": "Вы экономите",
+    "savingsSuffix": "на этой цене",
+    "availability": {
+      "inStock": "В наличии",
+      "outOfStock": "Нет в наличии"
+    },
+    "similar": {
+      "title": "Похожие товары"
+    },
+    "specs": {
+      "color": "Цвет",
+      "battery": "Батарея",
+      "connection": "Подключение",
+      "material": "Материал",
+      "size": "Размер",
+      "capacity": "Объём",
+      "count": "Количество",
+      "burnTime": "Время горения",
+      "scent": "Аромат",
+      "volume": "Объём",
+      "origin": "Страна производства",
+      "skinType": "Тип кожи"
+    }
   }
 }

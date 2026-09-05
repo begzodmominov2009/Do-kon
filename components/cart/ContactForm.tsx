@@ -1,8 +1,17 @@
 "use client";
 
-import type { ChangeEvent } from "react";
-import { FileText, Home, MapPin, MapPinned, Phone, User } from "lucide-react";
+import type { ChangeEvent, ReactNode } from "react";
+import {
+  FileText,
+  Home,
+  MapPin,
+  MapPinned,
+  Phone,
+  User,
+  type LucideIcon,
+} from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
+import { Select } from "@/components/ui/Select";
 import { regions } from "@/lib/data/regions";
 import { useCartStore, type ContactInfo } from "@/store/cart";
 
@@ -46,10 +55,47 @@ export function validateContact(
   return errors;
 }
 
-const fieldInputClass = (hasError: boolean) =>
-  `h-11 w-full bg-transparent text-sm text-text outline-none placeholder:text-text-muted ${
-    hasError ? "rounded-input border border-danger px-2" : ""
-  }`;
+// Shared icon + row-highlight-on-focus wrapper for the form's plain text fields.
+// Select renders its own row internally, so it doesn't use this wrapper.
+function FormField({
+  icon: Icon,
+  fieldId,
+  errorMessage,
+  children,
+}: {
+  icon: LucideIcon;
+  fieldId: string;
+  errorMessage?: string;
+  children: ReactNode;
+}) {
+  const hasError = Boolean(errorMessage);
+  const errorId = hasError ? `${fieldId}-error` : undefined;
+
+  return (
+    <div className="flex flex-col">
+      <div
+        className={`group flex items-center gap-3 rounded-input px-4 py-3 transition-colors duration-150 ${
+          hasError ? "bg-danger/8" : "focus-within:bg-surface-2"
+        }`}
+      >
+        <Icon
+          className={`h-5 w-5 shrink-0 transition-colors duration-150 ${
+            hasError ? "text-text-muted" : "text-text-muted group-focus-within:text-accent"
+          }`}
+        />
+        <div className="min-w-0 flex-1">{children}</div>
+      </div>
+      {hasError ? (
+        <p id={errorId} className="px-4 pb-1 text-xs text-danger">
+          {errorMessage}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+const bareFieldClass =
+  "w-full appearance-none border-0 bg-transparent text-sm text-text outline-none placeholder:text-text-muted";
 
 export function ContactForm({ errors, onClearError }: ContactFormProps) {
   const { t } = useTranslation();
@@ -62,11 +108,7 @@ export function ContactForm({ errors, onClearError }: ContactFormProps) {
 
   const handleChange =
     (field: keyof ContactInfo) =>
-    (
-      event: ChangeEvent<
-        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-      >,
-    ) => {
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setContactField(field, event.target.value);
       onClearError(field);
     };
@@ -77,181 +119,94 @@ export function ContactForm({ errors, onClearError }: ContactFormProps) {
     onClearError("phone");
   };
 
+  const handleSelectChange = (field: keyof ContactInfo) => (value: string) => {
+    setContactField(field, value);
+    onClearError(field);
+  };
+
   return (
     <div className="divide-y divide-border rounded-card border border-border bg-surface">
-      <div className="flex items-start gap-3 px-4 py-3">
-        <User className="mt-2.5 h-5 w-5 shrink-0 text-accent" />
-        <div className="min-w-0 flex-1">
+      <FormField icon={User} fieldId="contact-fullName" errorMessage={errors.fullName}>
+        <input
+          id="contact-fullName"
+          type="text"
+          value={contact.fullName}
+          onChange={handleChange("fullName")}
+          aria-label={t("cart.contact.fullName")}
+          aria-invalid={Boolean(errors.fullName)}
+          aria-describedby={errors.fullName ? "contact-fullName-error" : undefined}
+          placeholder={t("cart.contact.fullName")}
+          className={`h-6 ${bareFieldClass}`}
+        />
+      </FormField>
+
+      <FormField icon={Phone} fieldId="contact-phone" errorMessage={errors.phone}>
+        <div className="flex h-6 items-center gap-2">
+          <span className="shrink-0 text-sm text-text-muted">+998</span>
           <input
-            id="contact-fullName"
-            type="text"
-            value={contact.fullName}
-            onChange={handleChange("fullName")}
-            aria-label={t("cart.contact.fullName")}
-            aria-invalid={Boolean(errors.fullName)}
-            aria-describedby={
-              errors.fullName ? "contact-fullName-error" : undefined
-            }
-            placeholder={t("cart.contact.fullName")}
-            className={fieldInputClass(Boolean(errors.fullName))}
+            id="contact-phone"
+            type="tel"
+            inputMode="tel"
+            value={formatPhoneDigits(contact.phone)}
+            onChange={handlePhoneChange}
+            aria-label={t("cart.contact.phone")}
+            aria-invalid={Boolean(errors.phone)}
+            aria-describedby={errors.phone ? "contact-phone-error" : undefined}
+            placeholder="(90) 123-45-67"
+            className={`min-w-0 flex-1 ${bareFieldClass}`}
           />
-          {errors.fullName ? (
-            <p
-              id="contact-fullName-error"
-              className="mt-1 text-xs text-danger"
-            >
-              {errors.fullName}
-            </p>
-          ) : null}
         </div>
-      </div>
+      </FormField>
 
-      <div className="flex items-start gap-3 px-4 py-3">
-        <Phone className="mt-2.5 h-5 w-5 shrink-0 text-accent" />
-        <div className="min-w-0 flex-1">
-          <div
-            className={`flex h-11 items-center gap-2 ${
-              errors.phone ? "rounded-input border border-danger px-2" : ""
-            }`}
-          >
-            <span className="shrink-0 text-sm text-text-muted">+998</span>
-            <input
-              id="contact-phone"
-              type="tel"
-              inputMode="tel"
-              value={formatPhoneDigits(contact.phone)}
-              onChange={handlePhoneChange}
-              aria-label={t("cart.contact.phone")}
-              aria-invalid={Boolean(errors.phone)}
-              aria-describedby={
-                errors.phone ? "contact-phone-error" : undefined
-              }
-              placeholder="(90) 123-45-67"
-              className="min-w-0 flex-1 bg-transparent text-sm text-text outline-none placeholder:text-text-muted"
-            />
-          </div>
-          {errors.phone ? (
-            <p id="contact-phone-error" className="mt-1 text-xs text-danger">
-              {errors.phone}
-            </p>
-          ) : null}
-        </div>
-      </div>
+      <Select
+        icon={MapPin}
+        label={t("cart.contact.region")}
+        placeholder={t("cart.contact.region")}
+        value={contact.regionId}
+        options={regions.map((region) => ({ value: region.id, label: region.name }))}
+        onChange={handleSelectChange("regionId")}
+        errorMessage={errors.regionId}
+      />
 
-      <div className="flex items-start gap-3 px-4 py-3">
-        <MapPin className="mt-2.5 h-5 w-5 shrink-0 text-accent" />
-        <div className="min-w-0 flex-1">
-          <select
-            id="contact-regionId"
-            value={contact.regionId}
-            onChange={handleChange("regionId")}
-            aria-label={t("cart.contact.region")}
-            aria-invalid={Boolean(errors.regionId)}
-            aria-describedby={
-              errors.regionId ? "contact-regionId-error" : undefined
-            }
-            className={`h-11 w-full bg-transparent text-sm outline-none ${
-              contact.regionId ? "text-text" : "text-text-muted"
-            } ${errors.regionId ? "rounded-input border border-danger px-2" : ""}`}
-          >
-            <option value="" disabled>
-              {t("cart.contact.region")}
-            </option>
-            {regions.map((region) => (
-              <option key={region.id} value={region.id} className="text-text">
-                {region.name}
-              </option>
-            ))}
-          </select>
-          {errors.regionId ? (
-            <p
-              id="contact-regionId-error"
-              className="mt-1 text-xs text-danger"
-            >
-              {errors.regionId}
-            </p>
-          ) : null}
-        </div>
-      </div>
+      <Select
+        icon={MapPinned}
+        label={t("cart.contact.district")}
+        placeholder={t("cart.contact.district")}
+        disabledPlaceholder={t("cart.contact.districtPlaceholder")}
+        value={contact.districtId}
+        options={(selectedRegion?.districts ?? []).map((district) => ({
+          value: district.id,
+          label: district.name,
+        }))}
+        onChange={handleSelectChange("districtId")}
+        disabled={!selectedRegion}
+        errorMessage={errors.districtId}
+      />
 
-      <div className="flex items-start gap-3 px-4 py-3">
-        <MapPinned className="mt-2.5 h-5 w-5 shrink-0 text-accent" />
-        <div className="min-w-0 flex-1">
-          <select
-            id="contact-districtId"
-            value={contact.districtId}
-            onChange={handleChange("districtId")}
-            disabled={!selectedRegion}
-            aria-label={t("cart.contact.district")}
-            aria-invalid={Boolean(errors.districtId)}
-            aria-describedby={
-              errors.districtId ? "contact-districtId-error" : undefined
-            }
-            className={`h-11 w-full bg-transparent text-sm outline-none disabled:cursor-not-allowed ${
-              contact.districtId ? "text-text" : "text-text-muted"
-            } ${errors.districtId ? "rounded-input border border-danger px-2" : ""}`}
-          >
-            <option value="" disabled>
-              {selectedRegion
-                ? t("cart.contact.district")
-                : t("cart.contact.districtPlaceholder")}
-            </option>
-            {selectedRegion?.districts.map((district) => (
-              <option
-                key={district.id}
-                value={district.id}
-                className="text-text"
-              >
-                {district.name}
-              </option>
-            ))}
-          </select>
-          {errors.districtId ? (
-            <p
-              id="contact-districtId-error"
-              className="mt-1 text-xs text-danger"
-            >
-              {errors.districtId}
-            </p>
-          ) : null}
-        </div>
-      </div>
+      <FormField icon={Home} fieldId="contact-address" errorMessage={errors.address}>
+        <input
+          id="contact-address"
+          type="text"
+          value={contact.address}
+          onChange={handleChange("address")}
+          aria-label={t("cart.contact.address")}
+          aria-invalid={Boolean(errors.address)}
+          aria-describedby={errors.address ? "contact-address-error" : undefined}
+          placeholder={t("cart.contact.address")}
+          className={`h-6 ${bareFieldClass}`}
+        />
+      </FormField>
 
-      <div className="flex items-start gap-3 px-4 py-3">
-        <Home className="mt-2.5 h-5 w-5 shrink-0 text-accent" />
-        <div className="min-w-0 flex-1">
-          <input
-            id="contact-address"
-            type="text"
-            value={contact.address}
-            onChange={handleChange("address")}
-            aria-label={t("cart.contact.address")}
-            aria-invalid={Boolean(errors.address)}
-            aria-describedby={
-              errors.address ? "contact-address-error" : undefined
-            }
-            placeholder={t("cart.contact.address")}
-            className={fieldInputClass(Boolean(errors.address))}
-          />
-          {errors.address ? (
-            <p id="contact-address-error" className="mt-1 text-xs text-danger">
-              {errors.address}
-            </p>
-          ) : null}
-        </div>
-      </div>
-
-      <div className="flex items-start gap-3 px-4 py-3">
-        <FileText className="mt-2.5 h-5 w-5 shrink-0 text-accent" />
+      <FormField icon={FileText} fieldId="contact-comment">
         <textarea
           value={contact.comment}
           onChange={handleChange("comment")}
           aria-label={t("cart.contact.comment")}
           placeholder={t("cart.contact.commentPlaceholder")}
           rows={2}
-          className="min-w-0 flex-1 resize-none bg-transparent py-2 text-sm text-text outline-none placeholder:text-text-muted"
+          className={`resize-none ${bareFieldClass}`}
         />
-      </div>
+      </FormField>
     </div>
   );
 }

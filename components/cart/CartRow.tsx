@@ -21,6 +21,15 @@ export function CartRow({ item }: CartRowProps) {
 
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm text-text">{item.name}</p>
+        {item.colorName ? (
+          <div className="mt-1 flex items-center gap-1.5">
+            <span
+              className="h-3 w-3 shrink-0 rounded-full border border-border"
+              style={{ backgroundColor: item.colorHex }}
+            />
+            <span className="text-xs text-text-muted">{item.colorName}</span>
+          </div>
+        ) : null}
         <div className="mt-1 flex items-baseline gap-1">
           <span className="font-bold text-accent">
             {formatPrice(item.price)}

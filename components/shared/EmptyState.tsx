@@ -7,7 +7,8 @@ type EmptyStateProps = {
   title: string;
   description: string;
   ctaLabel: string;
-  ctaHref: string;
+  ctaHref?: string;
+  onCtaClick?: () => void;
 };
 
 export function EmptyState({
@@ -16,6 +17,7 @@ export function EmptyState({
   description,
   ctaLabel,
   ctaHref,
+  onCtaClick,
 }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center gap-4 py-10 text-center">
@@ -26,9 +28,15 @@ export function EmptyState({
         <p className="font-semibold text-text">{title}</p>
         <p className="mt-1 text-sm text-text-muted">{description}</p>
       </div>
-      <Link href={ctaHref} className={buttonClasses()}>
-        {ctaLabel}
-      </Link>
+      {onCtaClick ? (
+        <button type="button" onClick={onCtaClick} className={buttonClasses()}>
+          {ctaLabel}
+        </button>
+      ) : (
+        <Link href={ctaHref ?? "#"} className={buttonClasses()}>
+          {ctaLabel}
+        </Link>
+      )}
     </div>
   );
 }

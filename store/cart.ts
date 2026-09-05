@@ -1,14 +1,31 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { ProductColor } from "@/lib/types/product";
 
 export type CartItem = {
   id: string;
+  productId: string;
+  colorId?: string;
+  colorName?: string;
+  colorHex?: string;
   name: string;
   price: number;
   oldPrice?: number;
   emoji: string;
   quantity: number;
 };
+
+export type AddItemInput = {
+  id: string;
+  name: string;
+  price: number;
+  oldPrice?: number;
+  emoji: string;
+};
+
+export function getCartItemKey(productId: string, colorId?: string): string {
+  return colorId ? `${productId}:${colorId}` : productId;
+}
 
 type PromoStatus = "idle" | "loading" | "ok" | "error";
 
@@ -31,7 +48,7 @@ type CartState = {
   items: CartItem[];
   promo: Promo;
   contact: ContactInfo;
-  addItem: (product: Omit<CartItem, "quantity">) => void;
+  addItem: (product: AddItemInput, color?: ProductColor) => void;
   removeItem: (id: string) => void;
   setQty: (id: string, quantity: number) => void;
   clear: () => void;
@@ -57,19 +74,34 @@ export const useCartStore = create<CartState>()(
       items: [],
       promo: IDLE_PROMO,
       contact: EMPTY_CONTACT,
-      addItem: (product) => {
-        const existing = get().items.find((item) => item.id === product.id);
+      addItem: (product, color) => {
+        const key = getCartItemKey(product.id, color?.id);
+        const existing = get().items.find((item) => item.id === key);
         if (existing) {
           set({
             items: get().items.map((item) =>
-              item.id === product.id
-                ? { ...item, quantity: item.quantity + 1 }
-                : item,
+              item.id === key ? { ...item, quantity: item.quantity + 1 } : item,
             ),
           });
           return;
         }
-        set({ items: [...get().items, { ...product, quantity: 1 }] });
+        set({
+          items: [
+            ...get().items,
+            {
+              id: key,
+              productId: product.id,
+              colorId: color?.id,
+              colorName: color?.name,
+              colorHex: color?.hex,
+              name: product.name,
+              price: product.price,
+              oldPrice: product.oldPrice,
+              emoji: product.emoji,
+              quantity: 1,
+            },
+          ],
+        });
       },
       removeItem: (id) => {
         set({ items: get().items.filter((item) => item.id !== id) });
@@ -110,7 +142,7 @@ export const useCartStore = create<CartState>()(
   ),
 );
 
-// Distinct product lines in the cart (not the sum of quantities).
+// Distinct cart lines (each product+color combination counts separately).
 export function useCartTotalCount() {
   return useCartStore((state) => state.items.length);
 }
@@ -142,4 +174,12 @@ export function useCartTotal() {
   const subtotal = useCartSubtotal();
   const discount = useCartStore((state) => state.promo.discount);
   return Math.max(0, subtotal - discount);
+}
+
+// For quantity lookups keyed by product+color, e.g. on ProductCard / action bars.
+export function useCartItemQuantity(productId: string, colorId?: string) {
+  const key = getCartItemKey(productId, colorId);
+  return useCartStore(
+    (state) => state.items.find((item) => item.id === key)?.quantity ?? 0,
+  );
 }

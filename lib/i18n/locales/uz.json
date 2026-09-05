@@ -3,7 +3,8 @@
     "siteName": "Do'kon",
     "searchPlaceholder": "Qidiruv...",
     "currency": "so'm",
-    "viewAll": "Barchasi"
+    "viewAll": "Barchasi",
+    "close": "Yopish"
   },
   "nav": {
     "home": "Bosh sahifa",
@@ -33,7 +34,34 @@
     }
   },
   "catalog": {
-    "title": "Katalog"
+    "title": "Katalog",
+    "categories": {
+      "all": "Hammasi"
+    },
+    "sort": {
+      "newest": "Yangi",
+      "cheap": "Arzon",
+      "expensive": "Qimmat"
+    },
+    "filter": {
+      "button": "Filtr",
+      "title": "Filtr",
+      "priceRange": "Narx oralig'i",
+      "priceFrom": "dan",
+      "priceTo": "gacha",
+      "discountOnly": "Faqat chegirmadagilar",
+      "inStockOnly": "Faqat sotuvda bor",
+      "clear": "Tozalash",
+      "apply": "Qo'llash"
+    },
+    "results": {
+      "title": "Barcha mahsulotlar"
+    },
+    "empty": {
+      "title": "Hech narsa topilmadi",
+      "description": "Boshqa so'z bilan qidiring yoki filtrni tozalang",
+      "cta": "Filtrni tozalash"
+    }
   },
   "cart": {
     "title": "Savat",
@@ -119,6 +147,35 @@
     "add": "Savatga qo'shish",
     "increase": "Miqdorni oshirish",
     "decrease": "Miqdorni kamaytirish",
-    "favoriteToggle": "Sevimlilarga qo'shish"
+    "favoriteToggle": "Sevimlilarga qo'shish",
+    "back": "Orqaga",
+    "goToCart": "Savatga o'tish",
+    "previousImage": "Oldingi rasm",
+    "nextImage": "Keyingi rasm",
+    "showMore": "Batafsil",
+    "showLess": "Kamroq",
+    "savingsPrefix": "Bu narxda",
+    "savingsSuffix": "tejaysiz",
+    "availability": {
+      "inStock": "Sotuvda mavjud",
+      "outOfStock": "Omborda yo'q"
+    },
+    "similar": {
+      "title": "O'xshash mahsulotlar"
+    },
+    "specs": {
+      "color": "Rang",
+      "battery": "Batareya",
+      "connection": "Ulanish",
+      "material": "Material",
+      "size": "O'lcham",
+      "capacity": "Hajmi",
+      "count": "Soni",
+      "burnTime": "Yonish vaqti",
+      "scent": "Hidi",
+      "volume": "Hajmi",
+      "origin": "Ishlab chiqarilgan joyi",
+      "skinType": "Teri turi"
+    }
   }
 }

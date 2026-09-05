@@ -3,7 +3,8 @@
     "siteName": "Shop",
     "searchPlaceholder": "Search...",
     "currency": "so'm",
-    "viewAll": "View all"
+    "viewAll": "View all",
+    "close": "Close"
   },
   "nav": {
     "home": "Home",
@@ -33,7 +34,34 @@
     }
   },
   "catalog": {
-    "title": "Catalog"
+    "title": "Catalog",
+    "categories": {
+      "all": "All"
+    },
+    "sort": {
+      "newest": "Newest",
+      "cheap": "Cheapest",
+      "expensive": "Expensive"
+    },
+    "filter": {
+      "button": "Filter",
+      "title": "Filter",
+      "priceRange": "Price range",
+      "priceFrom": "From",
+      "priceTo": "To",
+      "discountOnly": "Discounted only",
+      "inStockOnly": "In stock only",
+      "clear": "Clear",
+      "apply": "Apply"
+    },
+    "results": {
+      "title": "All products"
+    },
+    "empty": {
+      "title": "Nothing found",
+      "description": "Try another search term or clear the filter",
+      "cta": "Clear filter"
+    }
   },
   "cart": {
     "title": "Cart",
@@ -119,6 +147,35 @@
     "add": "Add to cart",
     "increase": "Increase quantity",
     "decrease": "Decrease quantity",
-    "favoriteToggle": "Add to favorites"
+    "favoriteToggle": "Add to favorites",
+    "back": "Back",
+    "goToCart": "Go to cart",
+    "previousImage": "Previous image",
+    "nextImage": "Next image",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "savingsPrefix": "You save",
+    "savingsSuffix": "on this price",
+    "availability": {
+      "inStock": "In stock",
+      "outOfStock": "Out of stock"
+    },
+    "similar": {
+      "title": "Similar products"
+    },
+    "specs": {
+      "color": "Color",
+      "battery": "Battery",
+      "connection": "Connection",
+      "material": "Material",
+      "size": "Size",
+      "capacity": "Capacity",
+      "count": "Count",
+      "burnTime": "Burn time",
+      "scent": "Scent",
+      "volume": "Volume",
+      "origin": "Made in",
+      "skinType": "Skin type"
+    }
   }
 }
