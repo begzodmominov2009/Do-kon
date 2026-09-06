@@ -1,5 +1,5 @@
-import { PlaceholderSkeleton } from "@/components/shared/PlaceholderSkeleton";
+import { ProfileSkeleton } from "@/components/profile/ProfileSkeleton";
 
 export default function Loading() {
-  return <PlaceholderSkeleton />;
+  return <ProfileSkeleton />;
 }

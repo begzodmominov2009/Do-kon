@@ -1,5 +1,5 @@
-import { PagePlaceholder } from "@/components/shared/PagePlaceholder";
+import { FavoritesContent } from "@/components/favorites/FavoritesContent";
 
 export default function FavoritesPage() {
-  return <PagePlaceholder titleKey="favorites.title" />;
+  return <FavoritesContent />;
 }

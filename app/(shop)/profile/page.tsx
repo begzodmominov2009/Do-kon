@@ -1,5 +1,5 @@
-import { PagePlaceholder } from "@/components/shared/PagePlaceholder";
+import { ProfileContent } from "@/components/profile/ProfileContent";
 
 export default function ProfilePage() {
-  return <PagePlaceholder titleKey="profile.title" />;
+  return <ProfileContent />;
 }

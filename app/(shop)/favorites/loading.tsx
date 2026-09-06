@@ -1,5 +1,5 @@
-import { PlaceholderSkeleton } from "@/components/shared/PlaceholderSkeleton";
+import { FavoritesSkeleton } from "@/components/favorites/FavoritesSkeleton";
 
 export default function Loading() {
-  return <PlaceholderSkeleton />;
+  return <FavoritesSkeleton />;
 }

@@ -138,10 +138,93 @@
     "checkoutToast": "Order received"
   },
   "favorites": {
-    "title": "Favorites"
+    "title": "Favorites",
+    "clear": {
+      "button": "Clear",
+      "title": "Remove all favorites?",
+      "description": "All products will be removed from favorites. This can't be undone.",
+      "cancel": "Cancel",
+      "confirm": "Clear"
+    },
+    "empty": {
+      "title": "No favorites yet",
+      "description": "Add products you like here using the heart button",
+      "cta": "Browse products"
+    },
+    "suggestions": {
+      "title": "You might like"
+    },
+    "sort": {
+      "newest": "Recently added",
+      "cheap": "Cheapest",
+      "expensive": "Expensive"
+    },
+    "removedToast": "Removed from favorites",
+    "undo": "Undo"
   },
   "profile": {
-    "title": "Profile"
+    "title": "Profile",
+    "guest": {
+      "name": "Guest",
+      "subtitle": "Leave your details to place an order"
+    },
+    "stats": {
+      "orders": "Orders",
+      "cartItems": "In cart",
+      "favorites": "Favorites"
+    },
+    "settings": {
+      "sectionTitle": "SETTINGS",
+      "language": {
+        "title": "Language"
+      },
+      "theme": {
+        "title": "Theme",
+        "light": "Light",
+        "dark": "Dark",
+        "auto": "Auto"
+      }
+    },
+    "orders": {
+      "sectionTitle": "MY ORDERS",
+      "empty": {
+        "title": "No orders yet",
+        "description": "Your first order will show up here"
+      },
+      "status": {
+        "new": "New",
+        "accepted": "Accepted",
+        "shipping": "Shipping",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled"
+      },
+      "moreItemsSuffix": "more"
+    },
+    "general": {
+      "sectionTitle": "GENERAL",
+      "share": {
+        "title": "Share the app",
+        "description": "Send the link to your friends",
+        "copiedToast": "Link copied"
+      },
+      "contact": {
+        "title": "Contact us",
+        "description": "For questions and suggestions"
+      },
+      "delivery": {
+        "title": "Delivery terms",
+        "description": "About delivery time and cost",
+        "body": "Orders are usually delivered within 2-4 days. Delivery within Tashkent averages 25,000 so'm, and to the regions via BTS post averages 35,000 so'm. The exact price is shown at checkout."
+      },
+      "about": {
+        "title": "About the shop",
+        "description": "Version 1.0",
+        "body": "This app was built as a small online shop and also works as a Telegram Mini App. If you have questions or suggestions, reach out via the contact section."
+      }
+    },
+    "footer": {
+      "version": "version 1.0"
+    }
   },
   "product": {
     "add": "Add to cart",

@@ -138,10 +138,93 @@
     "checkoutToast": "Buyurtma qabul qilindi"
   },
   "favorites": {
-    "title": "Sevimlilar"
+    "title": "Sevimlilar",
+    "clear": {
+      "button": "Tozalash",
+      "title": "Barcha sevimlilar o'chirilsinmi?",
+      "description": "Barcha mahsulotlar sevimlilardan o'chiriladi. Bu amalni bekor qilib bo'lmaydi.",
+      "cancel": "Bekor qilish",
+      "confirm": "Tozalash"
+    },
+    "empty": {
+      "title": "Hali sevimli mahsulot yo'q",
+      "description": "Yoqqan mahsulotlarni yurak tugmasi orqali shu yerga qo'shing",
+      "cta": "Mahsulotlarni ko'rish"
+    },
+    "suggestions": {
+      "title": "Ehtimol yoqadi"
+    },
+    "sort": {
+      "newest": "Yangi qo'shilgan",
+      "cheap": "Arzon",
+      "expensive": "Qimmat"
+    },
+    "removedToast": "Sevimlilardan o'chirildi",
+    "undo": "Qaytarish"
   },
   "profile": {
-    "title": "Profil"
+    "title": "Profil",
+    "guest": {
+      "name": "Mehmon",
+      "subtitle": "Buyurtma berish uchun ma'lumotlaringizni qoldiring"
+    },
+    "stats": {
+      "orders": "Buyurtmalar",
+      "cartItems": "Savatda",
+      "favorites": "Sevimlilar"
+    },
+    "settings": {
+      "sectionTitle": "SOZLAMALAR",
+      "language": {
+        "title": "Til"
+      },
+      "theme": {
+        "title": "Mavzu",
+        "light": "Yorug'",
+        "dark": "Qorong'i",
+        "auto": "Avto"
+      }
+    },
+    "orders": {
+      "sectionTitle": "BUYURTMALARIM",
+      "empty": {
+        "title": "Hali buyurtma yo'q",
+        "description": "Birinchi buyurtmangiz shu yerda ko'rinadi"
+      },
+      "status": {
+        "new": "Yangi",
+        "accepted": "Qabul qilindi",
+        "shipping": "Yo'lda",
+        "delivered": "Yetkazildi",
+        "cancelled": "Bekor qilindi"
+      },
+      "moreItemsSuffix": "ta yana"
+    },
+    "general": {
+      "sectionTitle": "UMUMIY",
+      "share": {
+        "title": "Ilovani ulashish",
+        "description": "Do'stlaringizga havolani yuboring",
+        "copiedToast": "Havola nusxalandi"
+      },
+      "contact": {
+        "title": "Biz bilan bog'lanish",
+        "description": "Savol va takliflar uchun"
+      },
+      "delivery": {
+        "title": "Yetkazib berish shartlari",
+        "description": "Yetkazib berish muddati va narxi haqida",
+        "body": "Buyurtmalar odatda 2-4 kun ichida yetkaziladi. Toshkent shahri bo'ylab yetkazib berish o'rtacha 25 000 so'm, viloyatlarga BTS pochta orqali o'rtacha 35 000 so'm ni tashkil qiladi. Aniq narx buyurtma rasmiylashtirilganda ko'rsatiladi."
+      },
+      "about": {
+        "title": "Do'kon haqida",
+        "description": "Versiya 1.0",
+        "body": "Bu ilova kichik onlayn do'kon sifatida yaratilgan va Telegram Mini App sifatida ham ishlaydi. Savol va takliflaringiz bo'lsa, biz bilan bog'lanish bo'limi orqali murojaat qiling."
+      }
+    },
+    "footer": {
+      "version": "versiya 1.0"
+    }
   },
   "product": {
     "add": "Savatga qo'shish",
