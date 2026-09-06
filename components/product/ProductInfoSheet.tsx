@@ -37,7 +37,7 @@ export function ProductInfoSheet({
   const savedAmount = product.oldPrice ? product.oldPrice - product.price : 0;
 
   return (
-    <div className="relative z-10 -mt-7 rounded-t-[28px] bg-bg pb-28">
+    <div className="relative z-10 -mt-7 rounded-t-[28px] bg-bg pb-[calc(96px+env(safe-area-inset-bottom))]">
       <div className="mx-auto mt-2 h-1 w-10 rounded-full bg-border" />
 
       <Container className="pt-3">

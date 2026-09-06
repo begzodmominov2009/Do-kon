@@ -1,6 +1,12 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import Link from "next/link";
 import { ArrowLeft, ChevronLeft, ChevronRight, Heart, ShoppingCart } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
@@ -15,9 +21,15 @@ type ProductGalleryProps = {
   overlayOpacity: number;
 };
 
-const MAX_DOTS = 5;
+export const MAX_DOTS = 5;
 
-function getDotWindow(count: number, active: number, max: number): number[] {
+// A tap that moved less than this many px is a tap, not a swipe.
+const TAP_MOVE_THRESHOLD = 10;
+// Two taps landing within this window count as a double-tap, which is
+// ignored so it doesn't open the fullscreen viewer.
+const DOUBLE_TAP_WINDOW = 300;
+
+export function getDotWindow(count: number, active: number, max: number): number[] {
   if (count <= max) return Array.from({ length: count }, (_, i) => i);
   let start = active - Math.floor(max / 2);
   start = Math.max(0, Math.min(start, count - max));
@@ -36,6 +48,16 @@ export function ProductGallery({ product, overlayOpacity }: ProductGalleryProps)
   const toggleFavorite = useFavoritesStore((state) => state.toggle);
   const cartCount = useCartTotalCount();
   const imageCount = product.gallery.length;
+
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
+  const lastTapRef = useRef(0);
+  const tapTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (tapTimeoutRef.current) clearTimeout(tapTimeoutRef.current);
+    };
+  }, []);
 
   const discountPercent = product.oldPrice
     ? Math.round((1 - product.price / product.oldPrice) * 100)
@@ -71,6 +93,48 @@ export function ProductGallery({ product, overlayOpacity }: ProductGalleryProps)
     window.setTimeout(() => setHeartPulse(false), 300);
   };
 
+  // The open-fullscreen action lives only here, on the slide itself — not
+  // on the whole gallery container — so nearby control buttons never
+  // trigger it. A tap must not have moved (that's a swipe) and must not be
+  // the second half of a double-tap.
+  const handleSlidePointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    pointerStartRef.current = { x: event.clientX, y: event.clientY };
+  };
+
+  const handleSlidePointerUp = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const start = pointerStartRef.current;
+    pointerStartRef.current = null;
+    if (!start) return;
+
+    const movedX = Math.abs(event.clientX - start.x);
+    const movedY = Math.abs(event.clientY - start.y);
+    if (movedX > TAP_MOVE_THRESHOLD || movedY > TAP_MOVE_THRESHOLD) return;
+
+    const now = Date.now();
+    const isDoubleTap = now - lastTapRef.current < DOUBLE_TAP_WINDOW;
+    lastTapRef.current = now;
+
+    if (isDoubleTap) {
+      if (tapTimeoutRef.current) {
+        clearTimeout(tapTimeoutRef.current);
+        tapTimeoutRef.current = null;
+      }
+      return;
+    }
+
+    tapTimeoutRef.current = setTimeout(() => {
+      setZoomOpen(true);
+      tapTimeoutRef.current = null;
+    }, DOUBLE_TAP_WINDOW);
+  };
+
+  const handleSlideKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      setZoomOpen(true);
+    }
+  };
+
   const showPrev = activeIndex > 0;
   const showNext = activeIndex < imageCount - 1;
   const dotWindow = getDotWindow(imageCount, activeIndex, MAX_DOTS);
@@ -90,7 +154,9 @@ export function ProductGallery({ product, overlayOpacity }: ProductGalleryProps)
           <button
             key={index}
             type="button"
-            onClick={() => setZoomOpen(true)}
+            onPointerDown={handleSlidePointerDown}
+            onPointerUp={handleSlidePointerUp}
+            onKeyDown={handleSlideKeyDown}
             className="flex h-full w-full shrink-0 snap-start items-center justify-center text-[7rem]"
           >
             {emoji}
@@ -114,37 +180,47 @@ export function ProductGallery({ product, overlayOpacity }: ProductGalleryProps)
         <Link
           href="/"
           aria-label={t("product.back")}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-md"
+          className="flex h-11 w-11 items-center justify-center"
         >
-          <ArrowLeft className="h-5 w-5" />
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-md">
+            <ArrowLeft className="h-5 w-5" />
+          </span>
         </Link>
       </div>
 
       <div className="absolute right-4 top-4 z-10 flex gap-2">
         <button
           type="button"
-          onClick={handleHeartClick}
+          onClick={(event) => {
+            event.stopPropagation();
+            handleHeartClick();
+          }}
           aria-label={t("product.favoriteToggle")}
           aria-pressed={isFavorite}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-md"
+          className="flex h-11 w-11 items-center justify-center"
         >
-          <Heart
-            className={`h-5 w-5 transition-transform duration-150 ${
-              heartPulse ? "scale-125" : "scale-100"
-            } ${isFavorite ? "fill-danger text-danger" : ""}`}
-          />
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-md">
+            <Heart
+              className={`h-5 w-5 transition-transform duration-150 ${
+                heartPulse ? "scale-125" : "scale-100"
+              } ${isFavorite ? "fill-danger text-danger" : ""}`}
+            />
+          </span>
         </button>
         <Link
           href="/cart"
           aria-label={t("nav.cart")}
-          className="relative flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-md"
+          onClick={(event) => event.stopPropagation()}
+          className="flex h-11 w-11 items-center justify-center"
         >
-          <ShoppingCart className="h-5 w-5" />
-          {cartCount > 0 ? (
-            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold text-white">
-              {cartCount}
-            </span>
-          ) : null}
+          <span className="relative flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-md">
+            <ShoppingCart className="h-5 w-5" />
+            {cartCount > 0 ? (
+              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold text-white">
+                {cartCount}
+              </span>
+            ) : null}
+          </span>
         </Link>
       </div>
 
@@ -158,29 +234,39 @@ export function ProductGallery({ product, overlayOpacity }: ProductGalleryProps)
         <>
           <button
             type="button"
-            onClick={() => goToIndex(activeIndex - 1)}
+            onClick={(event) => {
+              event.stopPropagation();
+              goToIndex(activeIndex - 1);
+            }}
             aria-label={t("product.previousImage")}
-            className="absolute left-3 top-1/2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-md transition-[opacity,transform] duration-[180ms]"
+            className="absolute left-2 top-1/2 z-10 flex h-11 w-11 items-center justify-center transition-[opacity,transform] duration-[180ms]"
             style={{
               opacity: showPrev ? 1 : 0,
               transform: `translateY(-50%) scale(${showPrev ? 1 : 0.7})`,
               pointerEvents: showPrev ? "auto" : "none",
             }}
           >
-            <ChevronLeft className="h-5 w-5" />
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-md">
+              <ChevronLeft className="h-5 w-5" />
+            </span>
           </button>
           <button
             type="button"
-            onClick={() => goToIndex(activeIndex + 1)}
+            onClick={(event) => {
+              event.stopPropagation();
+              goToIndex(activeIndex + 1);
+            }}
             aria-label={t("product.nextImage")}
-            className="absolute right-3 top-1/2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-md transition-[opacity,transform] duration-[180ms]"
+            className="absolute right-2 top-1/2 z-10 flex h-11 w-11 items-center justify-center transition-[opacity,transform] duration-[180ms]"
             style={{
               opacity: showNext ? 1 : 0,
               transform: `translateY(-50%) scale(${showNext ? 1 : 0.7})`,
               pointerEvents: showNext ? "auto" : "none",
             }}
           >
-            <ChevronRight className="h-5 w-5" />
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-md">
+              <ChevronRight className="h-5 w-5" />
+            </span>
           </button>
         </>
       ) : null}

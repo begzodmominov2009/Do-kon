@@ -1,19 +1,41 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Store } from "lucide-react";
+import { Store } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
-import { Input } from "@/components/ui/Input";
+import { SearchInput } from "@/components/ui/SearchInput";
 import { Container } from "./Container";
 
 export function Header() {
   const { t } = useTranslation();
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const headerRef = useRef<HTMLElement>(null);
+
+  // Publishes the header's real height so other sticky bars (e.g. the
+  // catalog chip row) can stick below it instead of overlapping it.
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const updateHeight = () => {
+      document.documentElement.style.setProperty(
+        "--header-height",
+        `${el.offsetHeight}px`,
+      );
+    };
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isHome]);
 
   return (
-    <header className="sticky top-0 z-20 border-b border-border bg-bg">
+    <header
+      ref={headerRef}
+      className="sticky top-0 z-20 border-b border-border bg-bg"
+    >
       <Container className={isHome ? "py-3" : "py-3.5"}>
         <div className="flex items-center gap-2.5">
           <Link
@@ -28,13 +50,8 @@ export function Header() {
         </div>
 
         {isHome ? (
-          <div className="relative mt-3">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
-            <Input
-              type="search"
-              placeholder={t("common.searchPlaceholder")}
-              className="pl-9"
-            />
+          <div className="mt-3">
+            <SearchInput placeholder={t("common.searchPlaceholder")} />
           </div>
         ) : null}
       </Container>
