@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Heart, Minus, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
+import { ProductImage } from "@/components/shared/ProductImage";
 import { useTranslation } from "@/lib/i18n";
 import { formatPrice } from "@/lib/utils/formatPrice";
+import { i18nField } from "@/lib/utils/i18nField";
 import { useCartStore, useCartItemQuantity, getCartItemKey } from "@/store/cart";
 import { useFavoritesStore } from "@/store/favorites";
-import type { Product } from "@/lib/mock/products";
+import type { Product } from "@/lib/types/product";
 
 type ProductCardProps = {
   product: Product;
@@ -65,7 +67,8 @@ function AnimatedQuantity({ value }: { value: number }) {
 }
 
 export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const productName = i18nField(product.name, locale);
   const isFavorite = useFavoritesStore((state) =>
     state.ids.includes(product.id),
   );
@@ -105,11 +108,8 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
           />
         </button>
 
-        <Link
-          href={`/product/${product.id}`}
-          className="flex h-full w-full items-center justify-center text-5xl"
-        >
-          {product.emoji}
+        <Link href={`/product/${product.slug}`} className="absolute inset-0">
+          <ProductImage url={product.imageUrl} alt={productName} className="h-full w-full" />
         </Link>
 
         <div className="absolute bottom-2 right-2 z-10">
@@ -163,9 +163,9 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
         </div>
       </div>
 
-      <Link href={`/product/${product.id}`} className="mt-2 block">
+      <Link href={`/product/${product.slug}`} className="mt-2 block">
         <p className="line-clamp-2 min-h-[2.5em] text-sm text-text">
-          {product.name}
+          {productName}
         </p>
         <div className="mt-1 flex items-baseline gap-1">
           <span className="text-base font-bold text-text">

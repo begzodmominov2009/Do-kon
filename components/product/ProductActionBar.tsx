@@ -5,7 +5,7 @@ import { Minus, Plus, ShoppingCart } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 import { formatPrice } from "@/lib/utils/formatPrice";
 import { useCartStore, useCartItemQuantity, getCartItemKey } from "@/store/cart";
-import type { Product } from "@/lib/mock/products";
+import type { Product } from "@/lib/types/product";
 
 type ProductActionBarProps = {
   product: Product;

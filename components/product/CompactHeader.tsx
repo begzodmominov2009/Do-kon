@@ -2,9 +2,11 @@
 
 import { Plus } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
+import { ProductImage } from "@/components/shared/ProductImage";
 import { formatPrice } from "@/lib/utils/formatPrice";
+import { i18nField } from "@/lib/utils/i18nField";
 import { useCartStore } from "@/store/cart";
-import type { Product } from "@/lib/mock/products";
+import type { Product } from "@/lib/types/product";
 
 type CompactHeaderProps = {
   product: Product;
@@ -19,9 +21,10 @@ export function CompactHeader({
   colorId,
   onRequireColor,
 }: CompactHeaderProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const addItem = useCartStore((state) => state.addItem);
   const selectedColor = product.colors?.find((color) => color.id === colorId);
+  const productName = i18nField(product.name, locale);
 
   const handleAdd = () => {
     if (!onRequireColor()) return;
@@ -35,11 +38,14 @@ export function CompactHeader({
       }`}
     >
       <div className="mx-auto flex w-full max-w-[520px] items-center gap-3 px-4 py-2.5">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-input bg-surface-2 text-xl">
-          {product.emoji}
-        </div>
+        <ProductImage
+          url={product.imageUrl}
+          alt={productName}
+          className="h-9 w-9 shrink-0 rounded-input"
+          sizes="36px"
+        />
         <p className="min-w-0 flex-1 truncate text-sm font-medium text-text">
-          {product.name}
+          {productName}
         </p>
         <span className="shrink-0 text-sm font-bold text-text">
           {formatPrice(product.price)} {t("common.currency")}

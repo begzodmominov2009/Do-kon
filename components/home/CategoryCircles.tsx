@@ -1,21 +1,28 @@
-import { Home, Shirt, Smartphone, Sparkles } from "lucide-react";
-import { useTranslation } from "@/lib/i18n";
-import { categories } from "@/lib/mock/products";
+"use client";
 
-const iconByCategory = {
+import { Home, Shirt, Smartphone, Sparkles, type LucideIcon } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
+import { i18nField } from "@/lib/utils/i18nField";
+import type { Category } from "@/lib/types/product";
+
+const iconByCategory: Record<string, LucideIcon> = {
   electronics: Smartphone,
   fashion: Shirt,
   home: Home,
   beauty: Sparkles,
-} as const;
+};
 
-export function CategoryCircles() {
-  const { t } = useTranslation();
+type CategoryCirclesProps = {
+  categories: Category[];
+};
+
+export function CategoryCircles({ categories }: CategoryCirclesProps) {
+  const { locale } = useTranslation();
 
   return (
     <div className="no-scrollbar -mx-4 flex gap-4 overflow-x-auto px-4">
       {categories.map((category) => {
-        const Icon = iconByCategory[category.icon];
+        const Icon = iconByCategory[category.icon] ?? Sparkles;
         return (
           <div
             key={category.id}
@@ -25,7 +32,7 @@ export function CategoryCircles() {
               <Icon className="h-5.5 w-5.5" />
             </div>
             <span className="text-center text-xs text-text-muted">
-              {t(`home.categories.${category.id}`)}
+              {i18nField(category.name, locale)}
             </span>
           </div>
         );

@@ -1,4 +1,12 @@
-import type { ProductColor } from "@/lib/types/product";
+// Standalone mock data kept only for local comparison while the database is
+// empty — intentionally not sharing types with the live app (lib/types/product.ts),
+// since that shape now carries per-language DB fields this static data doesn't have.
+export type ProductColor = {
+  id: string;
+  name: string;
+  hex: string;
+  inStock: boolean;
+};
 
 export type ProductSpec = {
   key: string;

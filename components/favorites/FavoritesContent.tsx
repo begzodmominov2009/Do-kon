@@ -1,22 +1,27 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Heart, Sparkles } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 import { Container } from "@/components/layout/Container";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { DataError } from "@/components/shared/DataError";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { ProductCard } from "@/components/shared/ProductCard";
+import { ProductCardSkeleton } from "@/components/shared/ProductCardSkeleton";
 import { ProductRail } from "@/components/shared/ProductRail";
 import { Button } from "@/components/ui/Button";
 import { ChipRow, type ChipItem } from "@/components/catalog/ChipRow";
 import { useFavoritesStore } from "@/store/favorites";
-import { getProductById, products, type Product } from "@/lib/mock/products";
+import type { Product } from "@/lib/types/product";
 
 type SortId = "newest" | "cheap" | "expensive";
 
 const UNDO_DURATION = 5000;
 const EXIT_DURATION = 200;
+// Small catalog — one page is enough to cover every favorited product and
+// to pick suggestions from.
+const CATALOG_FETCH_LIMIT = 100;
 
 function shuffled(list: Product[]): Product[] {
   const copy = [...list];
@@ -38,21 +43,48 @@ export function FavoritesContent() {
   const [leavingIds, setLeavingIds] = useState<Set<string>>(new Set());
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [removed, setRemoved] = useState<{ id: string; name: string } | null>(null);
-  // Deterministic on first render (avoids an SSR/client mismatch), then
-  // shuffled client-side right after mount.
-  const [suggestions, setSuggestions] = useState<Product[]>(() => products.slice(0, 6));
+
+  // Favorite ids only exist in client-side storage, so the products they
+  // point at have to be fetched here instead of on the server.
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [productsError, setProductsError] = useState(false);
+  const [suggestions, setSuggestions] = useState<Product[]>([]);
 
   const previousStoreIdsRef = useRef(storeIds);
   const removalTimersRef = useRef(new Map<string, ReturnType<typeof setTimeout>>());
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const bulkClearRef = useRef(false);
 
+  const fetchAllProducts = useCallback(async () => {
+    setProductsLoading(true);
+    setProductsError(false);
+    try {
+      const response = await fetch(`/api/products?limit=${CATALOG_FETCH_LIMIT}`);
+      if (!response.ok) throw new Error("fetch_failed");
+      const data = (await response.json()) as { products: Product[]; total: number };
+      setAllProducts(data.products);
+    } catch {
+      setProductsError(true);
+    } finally {
+      setProductsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     const raf = requestAnimationFrame(() => {
-      setSuggestions(shuffled(products).slice(0, 6));
+      fetchAllProducts();
     });
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [fetchAllProducts]);
+
+  useEffect(() => {
+    if (allProducts.length === 0) return;
+    const raf = requestAnimationFrame(() => {
+      setSuggestions(shuffled(allProducts).slice(0, 6));
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [allProducts]);
 
   useEffect(() => {
     const timers = removalTimersRef.current;
@@ -116,24 +148,24 @@ export function FavoritesContent() {
       });
 
       const lastRemovedId = removedIds[removedIds.length - 1];
-      const product = getProductById(lastRemovedId);
+      const product = allProducts.find((item) => item.id === lastRemovedId);
       if (product) {
         if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
-        setRemoved({ id: lastRemovedId, name: product.name });
+        setRemoved({ id: lastRemovedId, name: product.name.uz });
         undoTimerRef.current = setTimeout(() => setRemoved(null), UNDO_DURATION);
       }
     }
-  }, [storeIds]);
+  }, [storeIds, allProducts]);
 
   const visibleProducts = useMemo(() => {
     const list = order
-      .map((id) => getProductById(id))
+      .map((id) => allProducts.find((product) => product.id === id))
       .filter((product): product is Product => Boolean(product));
 
     if (sortId === "cheap") return [...list].sort((a, b) => a.price - b.price);
     if (sortId === "expensive") return [...list].sort((a, b) => b.price - a.price);
     return [...list].sort((a, b) => (addedAt[b.id] ?? 0) - (addedAt[a.id] ?? 0));
-  }, [order, sortId, addedAt]);
+  }, [order, sortId, addedAt, allProducts]);
 
   const sortItems: ChipItem[] = [
     { id: "newest", label: t("favorites.sort.newest") },
@@ -177,7 +209,17 @@ export function FavoritesContent() {
         </div>
       </div>
 
-      {isEmpty ? (
+      {productsError ? (
+        <DataError onRetry={fetchAllProducts} />
+      ) : productsLoading ? (
+        <div className="grid grid-cols-2 gap-4">
+          {Array.from({ length: Math.min(Math.max(storeIds.length, 2), 6) }).map(
+            (_, index) => (
+              <ProductCardSkeleton key={index} />
+            ),
+          )}
+        </div>
+      ) : isEmpty ? (
         <div className="flex flex-col gap-7">
           <EmptyState
             icon={<Heart className="h-7 w-7 fill-danger text-danger" />}

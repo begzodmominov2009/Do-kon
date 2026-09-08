@@ -4,7 +4,12 @@
     "searchPlaceholder": "Search...",
     "currency": "so'm",
     "viewAll": "View all",
-    "close": "Close"
+    "close": "Close",
+    "error": {
+      "title": "Couldn't load data",
+      "description": "Check your connection and try again",
+      "retry": "Try again"
+    }
   },
   "nav": {
     "home": "Home",
@@ -182,14 +187,38 @@
         "title": "Theme",
         "light": "Light",
         "dark": "Dark",
-        "auto": "Auto"
+        "auto": "Auto",
+        "autoDescription": "Follows your device setting"
       }
     },
+    "myOrders": {
+      "itemsSuffix": "orders"
+    },
     "orders": {
-      "sectionTitle": "MY ORDERS",
+      "sectionTitle": "My orders",
+      "filter": {
+        "all": "All",
+        "active": "Active",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled"
+      },
+      "details": "Details",
+      "close": "Close",
+      "detail": {
+        "products": "PRODUCTS",
+        "delivery": "DELIVERY",
+        "contact": "CONTACT",
+        "comment": "COMMENT",
+        "subtotal": "Products",
+        "promo": "Promo code",
+        "deliveryPrice": "Delivery",
+        "free": "Free",
+        "total": "Total"
+      },
       "empty": {
         "title": "No orders yet",
-        "description": "Your first order will show up here"
+        "description": "Place your first order",
+        "cta": "Browse products"
       },
       "status": {
         "new": "New",
@@ -232,6 +261,11 @@
     "decrease": "Decrease quantity",
     "favoriteToggle": "Add to favorites",
     "back": "Back",
+    "notFound": {
+      "title": "Product not found",
+      "description": "This product doesn't exist or was removed",
+      "cta": "Browse products"
+    },
     "goToCart": "Go to cart",
     "previousImage": "Previous image",
     "nextImage": "Next image",

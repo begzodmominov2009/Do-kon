@@ -8,7 +8,8 @@ import { SectionHeader } from "@/components/shared/SectionHeader";
 import { ProductRail } from "@/components/shared/ProductRail";
 import { useTranslation } from "@/lib/i18n";
 import { formatPrice } from "@/lib/utils/formatPrice";
-import type { Product } from "@/lib/mock/products";
+import { i18nField } from "@/lib/utils/i18nField";
+import type { Product } from "@/lib/types/product";
 import { ColorPicker } from "./ColorPicker";
 
 type ProductInfoSheetProps = {
@@ -28,7 +29,7 @@ export function ProductInfoSheet({
   colorPickerRef,
   shakeX,
 }: ProductInfoSheetProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
 
   const discountPercent = product.oldPrice
@@ -42,9 +43,9 @@ export function ProductInfoSheet({
 
       <Container className="pt-3">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="accent">
-            {t(`home.categories.${product.categoryId}`)}
-          </Badge>
+          {product.category ? (
+            <Badge variant="accent">{i18nField(product.category.name, locale)}</Badge>
+          ) : null}
           <Badge variant={product.inStock ? "success" : "danger"}>
             {t(
               product.inStock
@@ -55,7 +56,7 @@ export function ProductInfoSheet({
         </div>
 
         <h1 className="mt-3 text-[26px] font-bold leading-tight text-text">
-          {product.name}
+          {i18nField(product.name, locale)}
         </h1>
 
         <div className="mt-2 flex flex-wrap items-baseline gap-2">
@@ -98,7 +99,7 @@ export function ProductInfoSheet({
               descriptionExpanded ? "" : "line-clamp-4"
             }`}
           >
-            {product.description}
+            {i18nField(product.description, locale)}
           </p>
           <button
             type="button"
@@ -113,12 +114,12 @@ export function ProductInfoSheet({
 
         <dl className="flex flex-col gap-3">
           {product.specs.map((spec) => (
-            <div key={spec.key} className="flex items-baseline gap-2 text-sm">
+            <div key={spec.id} className="flex items-baseline gap-2 text-sm">
               <dt className="shrink-0 text-text-muted">
-                {t(`product.specs.${spec.key}`)}
+                {i18nField(spec.label, locale)}
               </dt>
               <div className="flex-1 border-b border-dotted border-border" />
-              <dd className="shrink-0 text-text">{spec.value}</dd>
+              <dd className="shrink-0 text-text">{i18nField(spec.value, locale)}</dd>
             </div>
           ))}
         </dl>

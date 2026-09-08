@@ -4,7 +4,12 @@
     "searchPlaceholder": "Qidiruv...",
     "currency": "so'm",
     "viewAll": "Barchasi",
-    "close": "Yopish"
+    "close": "Yopish",
+    "error": {
+      "title": "Ma'lumot yuklanmadi",
+      "description": "Internet aloqasini tekshirib, qayta urinib ko'ring",
+      "retry": "Qayta urinish"
+    }
   },
   "nav": {
     "home": "Bosh sahifa",
@@ -182,14 +187,38 @@
         "title": "Mavzu",
         "light": "Yorug'",
         "dark": "Qorong'i",
-        "auto": "Avto"
+        "auto": "Avto",
+        "autoDescription": "Qurilma sozlamasiga ergashadi"
       }
     },
+    "myOrders": {
+      "itemsSuffix": "ta buyurtma"
+    },
     "orders": {
-      "sectionTitle": "BUYURTMALARIM",
+      "sectionTitle": "Buyurtmalarim",
+      "filter": {
+        "all": "Hammasi",
+        "active": "Faol",
+        "delivered": "Yetkazilgan",
+        "cancelled": "Bekor qilingan"
+      },
+      "details": "Batafsil",
+      "close": "Yopish",
+      "detail": {
+        "products": "MAHSULOTLAR",
+        "delivery": "YETKAZIB BERISH",
+        "contact": "ALOQA",
+        "comment": "IZOH",
+        "subtotal": "Mahsulotlar",
+        "promo": "Promokod",
+        "deliveryPrice": "Yetkazib berish",
+        "free": "Bepul",
+        "total": "Jami"
+      },
       "empty": {
         "title": "Hali buyurtma yo'q",
-        "description": "Birinchi buyurtmangiz shu yerda ko'rinadi"
+        "description": "Birinchi buyurtmangizni berib ko'ring",
+        "cta": "Mahsulotlarni ko'rish"
       },
       "status": {
         "new": "Yangi",
@@ -232,6 +261,11 @@
     "decrease": "Miqdorni kamaytirish",
     "favoriteToggle": "Sevimlilarga qo'shish",
     "back": "Orqaga",
+    "notFound": {
+      "title": "Mahsulot topilmadi",
+      "description": "Bu mahsulot mavjud emas yoki o'chirilgan",
+      "cta": "Mahsulotlarni ko'rish"
+    },
     "goToCart": "Savatga o'tish",
     "previousImage": "Oldingi rasm",
     "nextImage": "Keyingi rasm",

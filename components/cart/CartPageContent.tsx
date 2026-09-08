@@ -10,7 +10,7 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { ToastViewport, useToast } from "@/components/ui/Toast";
 import { useCartStore, useCartTotalCount, type ContactInfo } from "@/store/cart";
-import { products } from "@/lib/mock/products";
+import type { Product } from "@/lib/types/product";
 import { CartRow } from "./CartRow";
 import { SectionLabel } from "./SectionLabel";
 import { DeliveryMethod } from "./DeliveryMethod";
@@ -30,7 +30,11 @@ const FIELD_ORDER: (keyof ContactInfo)[] = [
   "address",
 ];
 
-export function CartPageContent() {
+type CartPageContentProps = {
+  suggestedProducts: Product[];
+};
+
+export function CartPageContent({ suggestedProducts }: CartPageContentProps) {
   const { t } = useTranslation();
   const items = useCartStore((state) => state.items);
   const contact = useCartStore((state) => state.contact);
@@ -87,7 +91,7 @@ export function CartPageContent() {
             icon={<Sparkles className="h-5 w-5" />}
             title={t("cart.suggestions.title")}
           />
-          <ProductRail products={products} />
+          <ProductRail products={suggestedProducts} />
         </div>
         <ToastViewport />
       </Container>

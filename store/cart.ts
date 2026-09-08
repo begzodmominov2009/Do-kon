@@ -1,26 +1,27 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { ProductColor } from "@/lib/types/product";
+import type { Localized } from "@/lib/utils/i18nField";
 
 export type CartItem = {
   id: string;
   productId: string;
   colorId?: string;
-  colorName?: string;
+  colorName?: Localized;
   colorHex?: string;
-  name: string;
+  name: Localized;
   price: number;
-  oldPrice?: number;
-  emoji: string;
+  oldPrice?: number | null;
+  imageUrl: string | null;
   quantity: number;
 };
 
 export type AddItemInput = {
   id: string;
-  name: string;
+  name: Localized;
   price: number;
-  oldPrice?: number;
-  emoji: string;
+  oldPrice?: number | null;
+  imageUrl: string | null;
 };
 
 export function getCartItemKey(productId: string, colorId?: string): string {
@@ -97,7 +98,7 @@ export const useCartStore = create<CartState>()(
               name: product.name,
               price: product.price,
               oldPrice: product.oldPrice,
-              emoji: product.emoji,
+              imageUrl: product.imageUrl,
               quantity: 1,
             },
           ],

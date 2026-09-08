@@ -2,7 +2,9 @@
 
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
+import { ProductImage } from "@/components/shared/ProductImage";
 import { formatPrice } from "@/lib/utils/formatPrice";
+import { i18nField } from "@/lib/utils/i18nField";
 import { useCartStore, type CartItem } from "@/store/cart";
 
 type CartRowProps = {
@@ -10,24 +12,30 @@ type CartRowProps = {
 };
 
 export function CartRow({ item }: CartRowProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const setQty = useCartStore((state) => state.setQty);
+  const name = i18nField(item.name, locale);
 
   return (
     <div className="flex items-start gap-3 py-3">
-      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-card bg-surface-2 text-2xl">
-        {item.emoji}
-      </div>
+      <ProductImage
+        url={item.imageUrl}
+        alt={name}
+        className="h-16 w-16 shrink-0 rounded-card"
+        sizes="64px"
+      />
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm text-text">{item.name}</p>
+        <p className="truncate text-sm text-text">{name}</p>
         {item.colorName ? (
           <div className="mt-1 flex items-center gap-1.5">
             <span
               className="h-3 w-3 shrink-0 rounded-full border border-border"
               style={{ backgroundColor: item.colorHex }}
             />
-            <span className="text-xs text-text-muted">{item.colorName}</span>
+            <span className="text-xs text-text-muted">
+              {i18nField(item.colorName, locale)}
+            </span>
           </div>
         ) : null}
         <div className="mt-1 flex items-baseline gap-1">

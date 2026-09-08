@@ -4,7 +4,12 @@
     "searchPlaceholder": "Поиск...",
     "currency": "сум",
     "viewAll": "Все",
-    "close": "Закрыть"
+    "close": "Закрыть",
+    "error": {
+      "title": "Не удалось загрузить данные",
+      "description": "Проверьте подключение к интернету и попробуйте снова",
+      "retry": "Повторить"
+    }
   },
   "nav": {
     "home": "Главная",
@@ -182,14 +187,38 @@
         "title": "Тема",
         "light": "Светлая",
         "dark": "Тёмная",
-        "auto": "Авто"
+        "auto": "Авто",
+        "autoDescription": "Следует настройке устройства"
       }
     },
+    "myOrders": {
+      "itemsSuffix": "заказа"
+    },
     "orders": {
-      "sectionTitle": "МОИ ЗАКАЗЫ",
+      "sectionTitle": "Мои заказы",
+      "filter": {
+        "all": "Все",
+        "active": "Активные",
+        "delivered": "Доставленные",
+        "cancelled": "Отменённые"
+      },
+      "details": "Подробнее",
+      "close": "Свернуть",
+      "detail": {
+        "products": "ТОВАРЫ",
+        "delivery": "ДОСТАВКА",
+        "contact": "КОНТАКТ",
+        "comment": "КОММЕНТАРИЙ",
+        "subtotal": "Товары",
+        "promo": "Промокод",
+        "deliveryPrice": "Доставка",
+        "free": "Бесплатно",
+        "total": "Итого"
+      },
       "empty": {
         "title": "Пока нет заказов",
-        "description": "Ваш первый заказ появится здесь"
+        "description": "Оформите свой первый заказ",
+        "cta": "Смотреть товары"
       },
       "status": {
         "new": "Новый",
@@ -232,6 +261,11 @@
     "decrease": "Уменьшить количество",
     "favoriteToggle": "В избранное",
     "back": "Назад",
+    "notFound": {
+      "title": "Товар не найден",
+      "description": "Этот товар не существует или был удалён",
+      "cta": "Смотреть товары"
+    },
     "goToCart": "Перейти в корзину",
     "previousImage": "Предыдущее фото",
     "nextImage": "Следующее фото",

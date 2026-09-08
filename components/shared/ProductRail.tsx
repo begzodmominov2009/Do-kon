@@ -1,6 +1,6 @@
 import { ProductCard } from "@/components/shared/ProductCard";
 import { ProductCardSkeleton } from "@/components/shared/ProductCardSkeleton";
-import type { Product } from "@/lib/mock/products";
+import type { Product } from "@/lib/types/product";
 
 type ProductRailProps = {
   products: Product[];

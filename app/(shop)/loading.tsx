@@ -1,5 +1,5 @@
-import { PlaceholderSkeleton } from "@/components/shared/PlaceholderSkeleton";
+import { HomeSkeleton } from "@/components/home/HomeSkeleton";
 
 export default function Loading() {
-  return <PlaceholderSkeleton />;
+  return <HomeSkeleton />;
 }

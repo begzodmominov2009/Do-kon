@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Product } from "@/lib/mock/products";
+import type { Product } from "@/lib/types/product";
 import { ProductGallery } from "./ProductGallery";
 import { CompactHeader } from "./CompactHeader";
 import { ProductInfoSheet } from "./ProductInfoSheet";

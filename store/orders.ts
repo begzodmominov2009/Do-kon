@@ -9,6 +9,8 @@ export type OrderItem = {
   emoji: string;
   price: number;
   quantity: number;
+  colorName?: string;
+  colorHex?: string;
 };
 
 export type Order = {
@@ -17,17 +19,21 @@ export type Order = {
   status: OrderStatus;
   createdAt: number;
   items: OrderItem[];
-  total: number;
+  deliveryPrice: number;
+  promoDiscount?: number;
   fullName: string;
   phone: string;
+  regionName: string;
+  districtName: string;
   address: string;
   deliveryLabel: string;
+  comment?: string;
 };
 
 export type NewOrderInput = Omit<Order, "id" | "number" | "createdAt" | "status">;
 
-// Seed data so the order-history UI has something real to render before
-// checkout is wired up to actually create orders.
+// Seed data so the orders UI has something real to render before checkout
+// is wired up to actually create orders.
 const MOCK_ORDERS: Order[] = [
   {
     id: "order-1024",
@@ -35,14 +41,26 @@ const MOCK_ORDERS: Order[] = [
     status: "shipping",
     createdAt: new Date("2026-09-06T09:15:00").getTime(),
     items: [
-      { productId: "p1", name: "Simsiz quloqchin", emoji: "🎧", price: 249000, quantity: 1 },
+      {
+        productId: "p1",
+        name: "Simsiz quloqchin",
+        emoji: "🎧",
+        price: 249000,
+        quantity: 1,
+        colorName: "Qora",
+        colorHex: "#1a1a1a",
+      },
       { productId: "p5", name: "Kofe demlagich", emoji: "☕", price: 279000, quantity: 1 },
     ],
-    total: 528000,
+    deliveryPrice: 0,
+    promoDiscount: 25000,
     fullName: "Aziz Karimov",
     phone: "(90) 123-45-67",
-    address: "Chilonzor tumani, 12-uy",
+    regionName: "Toshkent shahri",
+    districtName: "Chilonzor",
+    address: "12-uy, 45-kvartira",
     deliveryLabel: "BTS pochta orqali",
+    comment: "Iltimos, kechqurun yetkazib bering",
   },
   {
     id: "order-1023",
@@ -50,12 +68,22 @@ const MOCK_ORDERS: Order[] = [
     status: "delivered",
     createdAt: new Date("2026-09-02T14:40:00").getTime(),
     items: [
-      { productId: "p3", name: "Sport krossovka", emoji: "👟", price: 349000, quantity: 1 },
+      {
+        productId: "p3",
+        name: "Sport krossovka",
+        emoji: "👟",
+        price: 349000,
+        quantity: 1,
+        colorName: "Oq",
+        colorHex: "#f5f5f5",
+      },
     ],
-    total: 349000,
+    deliveryPrice: 0,
     fullName: "Aziz Karimov",
     phone: "(90) 123-45-67",
-    address: "Chilonzor tumani, 12-uy",
+    regionName: "Toshkent shahri",
+    districtName: "Chilonzor",
+    address: "12-uy, 45-kvartira",
     deliveryLabel: "BTS pochta orqali",
   },
   {
@@ -67,10 +95,12 @@ const MOCK_ORDERS: Order[] = [
       { productId: "p7", name: "Parfyum to'plami", emoji: "💐", price: 399000, quantity: 1 },
       { productId: "p8", name: "Teri parvarish to'plami", emoji: "🧴", price: 219000, quantity: 1 },
     ],
-    total: 618000,
+    deliveryPrice: 0,
     fullName: "Aziz Karimov",
     phone: "(90) 123-45-67",
-    address: "Chilonzor tumani, 12-uy",
+    regionName: "Toshkent shahri",
+    districtName: "Chilonzor",
+    address: "12-uy, 45-kvartira",
     deliveryLabel: "BTS pochta orqali",
   },
 ];

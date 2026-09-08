@@ -3,6 +3,7 @@
 import type { Ref } from "react";
 import { useTranslation } from "@/lib/i18n";
 import type { ProductColor } from "@/lib/types/product";
+import { i18nField } from "@/lib/utils/i18nField";
 
 type ColorPickerProps = {
   colors: ProductColor[];
@@ -27,7 +28,7 @@ export function ColorPicker({
   shakeX,
   ref,
 }: ColorPickerProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const selectedColor = colors.find((color) => color.id === selectedId);
 
   return (
@@ -40,7 +41,9 @@ export function ColorPicker({
           {t("product.specs.color")}
         </span>
         {selectedColor ? (
-          <span className="text-sm text-text-muted">{selectedColor.name}</span>
+          <span className="text-sm text-text-muted">
+            {i18nField(selectedColor.name, locale)}
+          </span>
         ) : null}
       </div>
       <div
@@ -57,7 +60,7 @@ export function ColorPicker({
               type="button"
               role="radio"
               aria-checked={active}
-              aria-label={color.name}
+              aria-label={i18nField(color.name, locale)}
               disabled={!color.inStock}
               onClick={() => onSelect(color.id)}
               className="flex h-11 w-11 shrink-0 items-center justify-center disabled:cursor-not-allowed"

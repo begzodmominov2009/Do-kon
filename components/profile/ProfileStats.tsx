@@ -49,6 +49,7 @@ export function ProfileStats() {
         icon={<FileText className="h-5 w-5" />}
         value={ordersCount}
         label={t("profile.stats.orders")}
+        href="/orders"
       />
       <StatCard
         icon={<ShoppingCart className="h-5 w-5" />}

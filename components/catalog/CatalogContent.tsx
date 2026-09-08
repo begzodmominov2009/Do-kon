@@ -1,98 +1,152 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Search as SearchIcon } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 import { Container } from "@/components/layout/Container";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { DataError } from "@/components/shared/DataError";
 import { ProductCard } from "@/components/shared/ProductCard";
 import { ProductCardSkeleton } from "@/components/shared/ProductCardSkeleton";
-import { categories, products } from "@/lib/mock/products";
+import { i18nField } from "@/lib/utils/i18nField";
+import type { Category, Product } from "@/lib/types/product";
 import { StickyFilterBar, type SortId } from "./StickyFilterBar";
 import { FilterPanel, EMPTY_FILTER, type FilterState } from "./FilterPanel";
 import type { ChipItem } from "./ChipRow";
 
 const PAGE_SIZE = 4;
+const SEARCH_DEBOUNCE_MS = 350;
 
-export function CatalogContent() {
-  const { t } = useTranslation();
+type CatalogProductsResponse = {
+  products: Product[];
+  total: number;
+};
+
+type CatalogContentProps = {
+  categories: Category[];
+  initialProducts: Product[];
+  initialTotal: number;
+};
+
+export function CatalogContent({
+  categories,
+  initialProducts,
+  initialTotal,
+}: CatalogContentProps) {
+  const { t, locale } = useTranslation();
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [categoryId, setCategoryId] = useState("all");
   const [sortId, setSortId] = useState<SortId>("newest");
   const [filter, setFilter] = useState<FilterState>(EMPTY_FILTER);
   const [filterOpen, setFilterOpen] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [total, setTotal] = useState(initialTotal);
+  const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState(false);
   const [entered, setEntered] = useState(false);
+
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const requestIdRef = useRef(0);
+  const isFirstRun = useRef(true);
 
   useEffect(() => {
     const raf = requestAnimationFrame(() => setEntered(true));
     return () => cancelAnimationFrame(raf);
   }, []);
 
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedSearch(search), SEARCH_DEBOUNCE_MS);
+    return () => window.clearTimeout(timer);
+  }, [search]);
+
   const categoryChips: ChipItem[] = useMemo(
     () => [
       { id: "all", label: t("catalog.categories.all") },
       ...categories.map((category) => ({
-        id: category.id,
-        label: t(`home.categories.${category.id}`),
+        id: category.slug,
+        label: i18nField(category.name, locale),
       })),
     ],
-    [t],
+    [t, categories, locale],
   );
 
-  const filtered = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    const min = filter.minPrice ? Number(filter.minPrice) : null;
-    const max = filter.maxPrice ? Number(filter.maxPrice) : null;
+  const buildParams = useCallback(
+    (offset: number) => {
+      const params = new URLSearchParams();
+      if (debouncedSearch.trim()) params.set("search", debouncedSearch.trim());
+      if (categoryId !== "all") params.set("category", categoryId);
+      if (filter.minPrice) params.set("minPrice", filter.minPrice);
+      if (filter.maxPrice) params.set("maxPrice", filter.maxPrice);
+      if (filter.discountOnly) params.set("discountOnly", "true");
+      if (filter.inStockOnly) params.set("inStockOnly", "true");
+      params.set("sort", sortId);
+      params.set("limit", String(PAGE_SIZE));
+      params.set("offset", String(offset));
+      return params;
+    },
+    [debouncedSearch, categoryId, filter, sortId],
+  );
 
-    const list = products.filter((product) => {
-      if (query && !product.name.toLowerCase().includes(query)) return false;
-      if (categoryId !== "all" && product.categoryId !== categoryId) return false;
-      if (min !== null && product.price < min) return false;
-      if (max !== null && product.price > max) return false;
-      if (filter.discountOnly && !product.oldPrice) return false;
-      if (filter.inStockOnly && !product.inStock) return false;
-      return true;
-    });
+  const fetchPage = useCallback(
+    async (offset: number, mode: "replace" | "append") => {
+      const requestId = ++requestIdRef.current;
+      if (mode === "replace") setLoading(true);
+      else setLoadingMore(true);
+      setError(false);
 
-    if (sortId === "cheap") return [...list].sort((a, b) => a.price - b.price);
-    if (sortId === "expensive") return [...list].sort((a, b) => b.price - a.price);
-    return list;
-  }, [search, categoryId, sortId, filter]);
+      try {
+        const response = await fetch(`/api/products?${buildParams(offset).toString()}`);
+        if (!response.ok) throw new Error("fetch_failed");
+        const data = (await response.json()) as CatalogProductsResponse;
+        if (requestId !== requestIdRef.current) return;
 
-  // Reset pagination during render when the result set's inputs change,
-  // rather than in an effect (avoids an extra cascading render).
-  const filterSignature = JSON.stringify({ search, categoryId, sortId, filter });
-  const [lastFilterSignature, setLastFilterSignature] = useState(filterSignature);
-  if (filterSignature !== lastFilterSignature) {
-    setLastFilterSignature(filterSignature);
-    setVisibleCount(PAGE_SIZE);
-  }
+        setProducts((prev) =>
+          mode === "replace" ? data.products : [...prev, ...data.products],
+        );
+        setTotal(data.total);
+      } catch {
+        if (requestId !== requestIdRef.current) return;
+        setError(true);
+      } finally {
+        if (requestId === requestIdRef.current) {
+          setLoading(false);
+          setLoadingMore(false);
+        }
+      }
+    },
+    [buildParams],
+  );
 
-  const visibleProducts = filtered.slice(0, visibleCount);
-  const hasMore = visibleCount < filtered.length;
+  // The server already rendered page 1 for the default filter state — only
+  // refetch once a filter actually changes.
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
+    fetchPage(0, "replace");
+  }, [debouncedSearch, categoryId, sortId, filter, fetchPage]);
+
+  const hasMore = products.length < total;
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
-    if (!sentinel || !hasMore) return;
+    if (!sentinel || !hasMore || loading) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0]?.isIntersecting) {
-          setLoadingMore(true);
-          window.setTimeout(() => {
-            setVisibleCount((prev) => prev + PAGE_SIZE);
-            setLoadingMore(false);
-          }, 500);
+        if (entries[0]?.isIntersecting && !loadingMore) {
+          fetchPage(products.length, "append");
         }
       },
       { rootMargin: "200px" },
     );
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [hasMore]);
+  }, [hasMore, loading, loadingMore, products.length, fetchPage]);
 
   const activeFilterCount =
     (filter.minPrice || filter.maxPrice ? 1 : 0) +
@@ -101,6 +155,7 @@ export function CatalogContent() {
 
   const handleClearAll = () => {
     setSearch("");
+    setDebouncedSearch("");
     setCategoryId("all");
     setSortId("newest");
     setFilter(EMPTY_FILTER);
@@ -123,10 +178,18 @@ export function CatalogContent() {
       <Container className="pt-4">
         <h1 className="text-xl font-bold text-text">{t("catalog.results.title")}</h1>
         <p className="mt-0.5 text-sm text-text-muted">
-          {filtered.length} {t("cart.itemsSuffix")}
+          {total} {t("cart.itemsSuffix")}
         </p>
 
-        {filtered.length === 0 ? (
+        {error && products.length === 0 ? (
+          <DataError onRetry={() => fetchPage(0, "replace")} />
+        ) : loading ? (
+          <div className="mt-4 grid grid-cols-2 gap-4">
+            {Array.from({ length: PAGE_SIZE }).map((_, index) => (
+              <ProductCardSkeleton key={index} />
+            ))}
+          </div>
+        ) : products.length === 0 ? (
           <EmptyState
             icon={<SearchIcon className="h-7 w-7" />}
             title={t("catalog.empty.title")}
@@ -137,7 +200,7 @@ export function CatalogContent() {
         ) : (
           <>
             <div className="mt-4 grid grid-cols-2 gap-4">
-              {visibleProducts.map((product, index) => (
+              {products.map((product, index) => (
                 <div
                   key={product.id}
                   className="transition-all duration-300 ease-out"
@@ -151,11 +214,16 @@ export function CatalogContent() {
                 </div>
               ))}
               {loadingMore
-                ? Array.from({ length: 4 }).map((_, index) => (
+                ? Array.from({ length: PAGE_SIZE }).map((_, index) => (
                     <ProductCardSkeleton key={`loading-${index}`} />
                   ))
                 : null}
             </div>
+            {error && products.length > 0 ? (
+              <div className="mt-4">
+                <DataError onRetry={() => fetchPage(products.length, "append")} />
+              </div>
+            ) : null}
             {hasMore ? <div ref={sentinelRef} className="h-1" /> : null}
           </>
         )}

@@ -8,11 +8,13 @@ import {
   type TransitionEvent as ReactTransitionEvent,
 } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ProductImage } from "@/components/shared/ProductImage";
 import { useTranslation } from "@/lib/i18n";
 import { getDotWindow, MAX_DOTS } from "./ProductGallery";
 
 type ImageZoomModalProps = {
-  images: string[];
+  images: (string | null)[];
+  alt: string;
   initialIndex: number;
   onClose: () => void;
 };
@@ -20,7 +22,7 @@ type ImageZoomModalProps = {
 const DRAG_CLOSE_THRESHOLD = 100;
 const DRAG_MOVE_THRESHOLD = 10;
 
-export function ImageZoomModal({ images, initialIndex, onClose }: ImageZoomModalProps) {
+export function ImageZoomModal({ images, alt, initialIndex, onClose }: ImageZoomModalProps) {
   const { t } = useTranslation();
   const trackRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -164,14 +166,18 @@ export function ImageZoomModal({ images, initialIndex, onClose }: ImageZoomModal
           opacity: visible ? 1 : 0,
         }}
       >
-        {images.map((emoji, index) => (
+        {images.map((url, index) => (
           <div
             key={index}
             className="flex h-full w-full shrink-0 snap-start items-center justify-center"
           >
-            <div className="flex h-[82%] w-[92%] items-center justify-center rounded-2xl bg-surface-2 text-[10rem]">
-              {emoji}
-            </div>
+            <ProductImage
+              url={url}
+              alt={alt}
+              className="h-[82%] w-[92%] rounded-2xl"
+              sizes="92vw"
+              fit="contain"
+            />
           </div>
         ))}
       </div>

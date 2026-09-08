@@ -1,25 +1,25 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getProductById, getSimilarProducts } from "@/lib/mock/products";
+import { getProductBySlug, getRelatedProducts } from "@/lib/api/products";
 import { ProductDetailContent } from "@/components/product/ProductDetailContent";
 
 export async function generateMetadata(
   props: PageProps<"/product/[id]">,
 ): Promise<Metadata> {
   const { id } = await props.params;
-  const product = getProductById(id);
-  return { title: product ? product.name : "Mahsulot" };
+  const product = await getProductBySlug(id);
+  return { title: product ? product.name.uz : "Mahsulot" };
 }
 
 export default async function ProductPage(props: PageProps<"/product/[id]">) {
   const { id } = await props.params;
-  const product = getProductById(id);
+  const product = await getProductBySlug(id);
 
   if (!product) {
     notFound();
   }
 
-  const similar = getSimilarProducts(product);
+  const similar = await getRelatedProducts(product.id, product.categoryId);
 
   return <ProductDetailContent product={product} similar={similar} />;
 }

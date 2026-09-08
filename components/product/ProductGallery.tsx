@@ -10,10 +10,12 @@ import {
 import Link from "next/link";
 import { ArrowLeft, ChevronLeft, ChevronRight, Heart, ShoppingCart } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
+import { ProductImage } from "@/components/shared/ProductImage";
 import { useTranslation } from "@/lib/i18n";
+import { i18nField } from "@/lib/utils/i18nField";
 import { useCartTotalCount } from "@/store/cart";
 import { useFavoritesStore } from "@/store/favorites";
-import type { Product } from "@/lib/mock/products";
+import type { Product } from "@/lib/types/product";
 import { ImageZoomModal } from "./ImageZoomModal";
 
 type ProductGalleryProps = {
@@ -37,7 +39,8 @@ export function getDotWindow(count: number, active: number, max: number): number
 }
 
 export function ProductGallery({ product, overlayOpacity }: ProductGalleryProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const productName = i18nField(product.name, locale);
   const trackRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [zoomOpen, setZoomOpen] = useState(false);
@@ -47,7 +50,11 @@ export function ProductGallery({ product, overlayOpacity }: ProductGalleryProps)
   );
   const toggleFavorite = useFavoritesStore((state) => state.toggle);
   const cartCount = useCartTotalCount();
-  const imageCount = product.gallery.length;
+  // Always render at least one slide (a placeholder) so an image-less
+  // product doesn't leave the gallery empty.
+  const galleryUrls: (string | null)[] =
+    product.images.length > 0 ? product.images.map((image) => image.url) : [null];
+  const imageCount = galleryUrls.length;
 
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
   const lastTapRef = useRef(0);
@@ -150,16 +157,16 @@ export function ProductGallery({ product, overlayOpacity }: ProductGalleryProps)
         onScroll={handleScroll}
         className="no-scrollbar flex h-full w-full snap-x snap-mandatory overflow-x-auto"
       >
-        {product.gallery.map((emoji, index) => (
+        {galleryUrls.map((url, index) => (
           <button
             key={index}
             type="button"
             onPointerDown={handleSlidePointerDown}
             onPointerUp={handleSlidePointerUp}
             onKeyDown={handleSlideKeyDown}
-            className="flex h-full w-full shrink-0 snap-start items-center justify-center text-[7rem]"
+            className="h-full w-full shrink-0 snap-start"
           >
-            {emoji}
+            <ProductImage url={url} alt={productName} className="h-full w-full" sizes="100vw" />
           </button>
         ))}
       </div>
@@ -297,7 +304,8 @@ export function ProductGallery({ product, overlayOpacity }: ProductGalleryProps)
 
       {zoomOpen ? (
         <ImageZoomModal
-          images={product.gallery}
+          images={galleryUrls}
+          alt={productName}
           initialIndex={activeIndex}
           onClose={() => setZoomOpen(false)}
         />
