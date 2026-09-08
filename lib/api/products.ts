@@ -1,6 +1,6 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { supabaseServerClient } from "@/lib/supabase/server";
+import { getSupabaseServerClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/types/db";
 import type { Category, Product, ProductColor, ProductImage, ProductSpec } from "@/lib/types/product";
 
@@ -138,7 +138,7 @@ function mapProductDetail(row: ProductDetailRow): Product {
 }
 
 export async function getCategories(): Promise<Category[]> {
-  const { data, error } = await supabaseServerClient
+  const { data, error } = await getSupabaseServerClient()
     .from("categories")
     .select(CATEGORY_COLUMNS)
     .eq("is_active", true)
@@ -171,7 +171,7 @@ export type ProductPage = {
 // can reuse this exact filter logic instead of duplicating it.
 export async function getProducts(
   filter: ProductFilter = {},
-  client: SupabaseClient<Database> = supabaseServerClient,
+  client: SupabaseClient<Database> = getSupabaseServerClient(),
 ): Promise<ProductPage> {
   const {
     categorySlug,
@@ -227,7 +227,7 @@ export async function getProducts(
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  const { data, error } = await supabaseServerClient
+  const { data, error } = await getSupabaseServerClient()
     .from("products")
     .select(PRODUCT_DETAIL_COLUMNS)
     .eq("slug", slug)
@@ -245,7 +245,7 @@ export async function getRelatedProducts(
   categoryId: string,
   limit = 6,
 ): Promise<Product[]> {
-  const { data, error } = await supabaseServerClient
+  const { data, error } = await getSupabaseServerClient()
     .from("products")
     .select(PRODUCT_COLUMNS)
     .eq("is_active", true)

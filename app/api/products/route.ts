@@ -1,10 +1,15 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { supabaseBrowserClient } from "@/lib/supabase/client";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { getProducts, type ProductSort } from "@/lib/api/products";
 
 // Client-side filtering/search/pagination (catalog, favorites) goes through
 // this route instead of querying Supabase directly from the browser, so it
 // always runs with the anon key and stays behind RLS.
+
+// Filters depend on the request's query string, so this route must not be
+// statically evaluated at build time.
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
 
@@ -25,7 +30,7 @@ export async function GET(request: NextRequest) {
         limit: params.has("limit") ? Number(params.get("limit")) : undefined,
         offset: params.has("offset") ? Number(params.get("offset")) : undefined,
       },
-      supabaseBrowserClient,
+      getSupabaseBrowserClient(),
     );
 
     return NextResponse.json(result);

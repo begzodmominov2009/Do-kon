@@ -1,15 +1,31 @@
 import "server-only";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/types/db";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(
+      `Missing environment variable: ${name}. Set it in .env.local before using Supabase.`,
+    );
+  }
+  return value;
+}
+
+let cachedClient: SupabaseClient<Database> | undefined;
 
 // Server-only client: uses the service_role key, which bypasses RLS. The
 // "server-only" import above makes any accidental client-component import
 // of this file fail at build time instead of leaking the key to the browser.
-export const supabaseServerClient = createClient<Database>(
-  supabaseUrl,
-  supabaseServiceRoleKey,
-  { auth: { persistSession: false } },
-);
+// Created lazily (and cached) on first call so a missing env var fails when
+// the client is actually used, not at module load / build time.
+export function getSupabaseServerClient(): SupabaseClient<Database> {
+  if (!cachedClient) {
+    cachedClient = createClient<Database>(
+      requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
+      requireEnv("SUPABASE_SERVICE_ROLE_KEY"),
+      { auth: { persistSession: false } },
+    );
+  }
+  return cachedClient;
+}
