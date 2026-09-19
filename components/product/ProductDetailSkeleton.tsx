@@ -9,12 +9,14 @@ export function ProductDetailSkeleton() {
         <div className="mx-auto mt-2 h-1 w-10 rounded-full bg-border" />
         <Container className="flex flex-col gap-4 pt-3">
           <div className="flex gap-2">
-            <Skeleton className="h-6 w-24 rounded-chip" />
-            <Skeleton className="h-6 w-28 rounded-chip" />
+            <Skeleton className="h-7 w-24 rounded-[9px]" />
+            <Skeleton className="h-7 w-28 rounded-[9px]" />
           </div>
           <Skeleton className="h-7 w-3/4" />
-          <Skeleton className="h-9 w-1/2" />
-          <Skeleton className="h-16 w-full" />
+          <div className="flex flex-col gap-2.5">
+            <Skeleton className="h-9 w-40" />
+            <Skeleton className="h-9 w-56 rounded-[10px]" />
+          </div>
           <div className="flex flex-col gap-2">
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-full" />

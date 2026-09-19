@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Check, ChevronRight, X } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
+import { lockScroll, unlockScroll } from "@/lib/utils/scrollLock";
 
 export type SettingsPickerOption = {
   value: string;
@@ -20,6 +21,8 @@ type SettingsPickerRowProps = {
   onSelect: (value: string) => void;
 };
 
+const CLOSE_TRANSITION_MS = 200;
+
 // Shared by every profile settings row that opens a bottom-sheet picker
 // (language, theme, ...) so the trigger row and the sheet stay identical.
 export function SettingsPickerRow({
@@ -33,9 +36,22 @@ export function SettingsPickerRow({
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const openSheet = () => setOpen(true);
-  const closeSheet = () => setVisible(false);
+
+  // transitionend (below) is the normal path to setOpen(false); this timer
+  // is a guaranteed fallback (e.g. prefers-reduced-motion can shrink the
+  // transition enough that the event may not reliably fire) so the sheet
+  // never stays mounted — and blocking clicks — forever.
+  const closeSheet = () => {
+    setVisible(false);
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    closeTimeoutRef.current = setTimeout(() => {
+      closeTimeoutRef.current = null;
+      setOpen(false);
+    }, CLOSE_TRANSITION_MS + 50);
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -45,10 +61,8 @@ export function SettingsPickerRow({
 
   useEffect(() => {
     if (!open) return;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    lockScroll();
+    return () => unlockScroll();
   }, [open]);
 
   useEffect(() => {
@@ -59,6 +73,12 @@ export function SettingsPickerRow({
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [open]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    };
+  }, []);
 
   return (
     <>
@@ -89,7 +109,13 @@ export function SettingsPickerRow({
           />
           <div
             onTransitionEnd={() => {
-              if (!visible) setOpen(false);
+              if (!visible) {
+                if (closeTimeoutRef.current) {
+                  clearTimeout(closeTimeoutRef.current);
+                  closeTimeoutRef.current = null;
+                }
+                setOpen(false);
+              }
             }}
             className={`relative z-10 flex w-full max-w-[520px] flex-col rounded-t-card border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] transition-transform duration-200 ease-out ${
               visible ? "translate-y-0" : "translate-y-full"

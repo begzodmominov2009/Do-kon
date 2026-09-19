@@ -7,9 +7,11 @@ import {
   type PointerEvent as ReactPointerEvent,
   type TransitionEvent as ReactTransitionEvent,
 } from "react";
+import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { ProductImage } from "@/components/shared/ProductImage";
 import { useTranslation } from "@/lib/i18n";
+import { lockScroll, unlockScroll } from "@/lib/utils/scrollLock";
 import { getDotWindow, MAX_DOTS } from "./ProductGallery";
 
 type ImageZoomModalProps = {
@@ -21,6 +23,7 @@ type ImageZoomModalProps = {
 
 const DRAG_CLOSE_THRESHOLD = 100;
 const DRAG_MOVE_THRESHOLD = 10;
+const CLOSE_TRANSITION_MS = 260;
 
 export function ImageZoomModal({ images, alt, initialIndex, onClose }: ImageZoomModalProps) {
   const { t } = useTranslation();
@@ -32,18 +35,20 @@ export function ImageZoomModal({ images, alt, initialIndex, onClose }: ImageZoom
   const [dragY, setDragY] = useState(0);
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
   const isDraggingRef = useRef(false);
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const imageCount = images.length;
 
   useEffect(() => {
     triggerRef.current = document.activeElement;
-    document.body.style.overflow = "hidden";
+    lockScroll();
     const track = trackRef.current;
     if (track) track.scrollLeft = initialIndex * track.clientWidth;
     closeButtonRef.current?.focus();
     const raf = requestAnimationFrame(() => setVisible(true));
     return () => {
-      document.body.style.overflow = "";
+      unlockScroll();
       cancelAnimationFrame(raf);
+      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
       if (triggerRef.current instanceof HTMLElement) {
         triggerRef.current.focus();
       }
@@ -51,7 +56,18 @@ export function ImageZoomModal({ images, alt, initialIndex, onClose }: ImageZoom
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const requestClose = () => setVisible(false);
+  // handleTrackTransitionEnd (below) is the normal path to onClose(); this
+  // timer is a guaranteed fallback (e.g. prefers-reduced-motion can shrink
+  // the transition enough that the event may not reliably fire) so the
+  // viewer never stays mounted — and blocking clicks — forever.
+  const requestClose = () => {
+    setVisible(false);
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    closeTimeoutRef.current = setTimeout(() => {
+      closeTimeoutRef.current = null;
+      onClose();
+    }, CLOSE_TRANSITION_MS + 50);
+  };
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -59,6 +75,7 @@ export function ImageZoomModal({ images, alt, initialIndex, onClose }: ImageZoom
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleScroll = () => {
@@ -115,7 +132,13 @@ export function ImageZoomModal({ images, alt, initialIndex, onClose }: ImageZoom
   };
 
   const handleTrackTransitionEnd = (event: ReactTransitionEvent<HTMLDivElement>) => {
-    if (event.propertyName === "opacity" && !visible) onClose();
+    if (event.propertyName === "opacity" && !visible) {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+        closeTimeoutRef.current = null;
+      }
+      onClose();
+    }
   };
 
   const dragFade = Math.min(dragY / 320, 0.6);
@@ -124,11 +147,15 @@ export function ImageZoomModal({ images, alt, initialIndex, onClose }: ImageZoom
   const showNext = activeIndex < imageCount - 1;
   const dotWindow = getDotWindow(imageCount, activeIndex, MAX_DOTS);
 
-  return (
+  // Portaled straight to <body>: rendered as a child of the sticky, scroll-
+  // stacking-context'd gallery, this modal's z-index was only ever compared
+  // against its siblings inside that context — never against the content
+  // sheet or bottom bar sitting outside it. A portal escapes that entirely.
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-[100] flex items-center justify-center transition-opacity duration-[220ms]"
+      className="fixed inset-0 z-[200] flex items-center justify-center transition-opacity duration-[220ms]"
       style={{
         opacity: backdropOpacity,
         backgroundColor: "color-mix(in srgb, var(--bg) 88%, transparent)",
@@ -241,6 +268,7 @@ export function ImageZoomModal({ images, alt, initialIndex, onClose }: ImageZoom
           })}
         </div>
       ) : null}
-    </div>
+    </div>,
+    document.body,
   );
 }

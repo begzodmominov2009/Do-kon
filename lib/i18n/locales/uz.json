@@ -88,7 +88,16 @@
       "apply": "Qo'llash",
       "appliedSuffix": "qo'llandi",
       "cancel": "Bekor qilish",
-      "invalid": "Noto'g'ri promokod"
+      "invalid": "Noto'g'ri promokod",
+      "removedToast": "Promokod bekor qilindi",
+      "errors": {
+        "notFound": "Bunday promokod topilmadi",
+        "inactive": "Bu promokod ishlamaydi",
+        "expired": "Promokod muddati tugagan",
+        "limit": "Promokod ishlatish limiti tugagan",
+        "minOrderPrefix": "Bu promokod",
+        "minOrderSuffix": "so'mdan yuqori xaridda ishlaydi"
+      }
     },
     "sections": {
       "delivery": "Yetkazib berish turi",
@@ -140,7 +149,20 @@
       "confirm": "Tozalash"
     },
     "checkout": "Buyurtma berish",
-    "checkoutToast": "Buyurtma qabul qilindi"
+    "checkoutToast": "Buyurtma qabul qilindi",
+    "checkoutErrors": {
+      "outOfStock": "Ba'zi mahsulotlar tugab qolgan. Savatni yangilang",
+      "promoInvalid": "Promokod yaroqsiz bo'lib qoldi",
+      "validation": "Ma'lumotlarni tekshiring",
+      "generic": "Xatolik yuz berdi. Qayta urinib ko'ring"
+    }
+  },
+  "order": {
+    "success": {
+      "title": "Buyurtma qabul qilindi",
+      "subtitle": "Operatorimiz tez orada bog'lanadi",
+      "home": "Bosh sahifaga"
+    }
   },
   "favorites": {
     "title": "Sevimlilar",
@@ -169,10 +191,6 @@
   },
   "profile": {
     "title": "Profil",
-    "guest": {
-      "name": "Mehmon",
-      "subtitle": "Buyurtma berish uchun ma'lumotlaringizni qoldiring"
-    },
     "stats": {
       "orders": "Buyurtmalar",
       "cartItems": "Savatda",
@@ -196,12 +214,7 @@
     },
     "orders": {
       "sectionTitle": "Buyurtmalarim",
-      "filter": {
-        "all": "Hammasi",
-        "active": "Faol",
-        "delivered": "Yetkazilgan",
-        "cancelled": "Bekor qilingan"
-      },
+      "deviceNotice": "Buyurtmalar shu qurilmada saqlanadi",
       "details": "Batafsil",
       "close": "Yopish",
       "detail": {
@@ -219,13 +232,6 @@
         "title": "Hali buyurtma yo'q",
         "description": "Birinchi buyurtmangizni berib ko'ring",
         "cta": "Mahsulotlarni ko'rish"
-      },
-      "status": {
-        "new": "Yangi",
-        "accepted": "Qabul qilindi",
-        "shipping": "Yo'lda",
-        "delivered": "Yetkazildi",
-        "cancelled": "Bekor qilindi"
       },
       "moreItemsSuffix": "ta yana"
     },
@@ -276,6 +282,12 @@
     "availability": {
       "inStock": "Sotuvda mavjud",
       "outOfStock": "Omborda yo'q"
+    },
+    "lowStock": {
+      "tag": "Omborda {{count}} dona qoldi",
+      "card": "{{count}} dona qoldi",
+      "bannerTitle": "Shoshiling! Faqat {{count}} dona qoldi",
+      "bannerSubtitle": "Tez orada tugashi mumkin"
     },
     "similar": {
       "title": "O'xshash mahsulotlar"

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type RefObject } from "react";
-import { Sparkles } from "lucide-react";
+import { Flame, Sparkles, Tag } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Container } from "@/components/layout/Container";
 import { SectionHeader } from "@/components/shared/SectionHeader";
@@ -9,6 +9,7 @@ import { ProductRail } from "@/components/shared/ProductRail";
 import { useTranslation } from "@/lib/i18n";
 import { formatPrice } from "@/lib/utils/formatPrice";
 import { i18nField } from "@/lib/utils/i18nField";
+import { LOW_STOCK_THRESHOLD } from "@/lib/constants";
 import type { Product } from "@/lib/types/product";
 import { ColorPicker } from "./ColorPicker";
 
@@ -32,10 +33,13 @@ export function ProductInfoSheet({
   const { t, locale } = useTranslation();
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
 
-  const discountPercent = product.oldPrice
-    ? Math.round((1 - product.price / product.oldPrice) * 100)
+  const oldPrice = product.oldPrice;
+  const discountPercent = oldPrice
+    ? Math.round((1 - product.price / oldPrice) * 100)
     : null;
-  const savedAmount = product.oldPrice ? product.oldPrice - product.price : 0;
+  const savedAmount = oldPrice ? oldPrice - product.price : 0;
+  const isOutOfStock = product.stock === 0;
+  const isLowStock = product.stock > 0 && product.stock <= LOW_STOCK_THRESHOLD;
 
   return (
     <div className="relative z-10 -mt-7 rounded-t-[28px] bg-bg pb-[calc(96px+env(safe-area-inset-bottom))]">
@@ -44,38 +48,78 @@ export function ProductInfoSheet({
       <Container className="pt-3">
         <div className="flex flex-wrap items-center gap-2">
           {product.category ? (
-            <Badge variant="accent">{i18nField(product.category.name, locale)}</Badge>
+            <Badge variant="accent" size="tag">
+              {i18nField(product.category.name, locale)}
+            </Badge>
           ) : null}
-          <Badge variant={product.inStock ? "success" : "danger"}>
-            {t(
-              product.inStock
-                ? "product.availability.inStock"
-                : "product.availability.outOfStock",
-            )}
-          </Badge>
+          {isOutOfStock ? (
+            <Badge variant="danger-soft" size="tag">
+              {t("product.availability.outOfStock")}
+            </Badge>
+          ) : isLowStock ? (
+            <Badge
+              variant="warning-soft"
+              size="tag"
+              icon={<Flame className="h-[13px] w-[13px]" aria-hidden />}
+            >
+              {t("product.lowStock.tag", { count: product.stock })}
+            </Badge>
+          ) : (
+            <Badge variant="success-soft" size="tag">
+              {t("product.availability.inStock")}
+            </Badge>
+          )}
         </div>
 
-        <h1 className="mt-3 text-[26px] font-bold leading-tight text-text">
+        <h1 className="mt-3 text-[26px] font-bold leading-tight tracking-[-0.02em] text-text">
           {i18nField(product.name, locale)}
         </h1>
 
-        <div className="mt-2 flex flex-wrap items-baseline gap-2">
-          <span className="text-[30px] font-bold text-text">
-            {formatPrice(product.price)}
-          </span>
-          <span className="text-sm text-text-muted">{t("common.currency")}</span>
-          {product.oldPrice ? (
-            <span className="text-sm text-text-muted line-through">
-              {formatPrice(product.oldPrice)}
+        <div className="mt-2 flex flex-col gap-2.5">
+          <div className="flex items-baseline gap-1">
+            <span className="text-[32px] font-bold tracking-[-0.02em] text-text">
+              {formatPrice(product.price)}
             </span>
+            <span className="text-[15px] font-medium text-text-muted">
+              {t("common.currency")}
+            </span>
+          </div>
+
+          {oldPrice && discountPercent ? (
+            <div className="flex items-center gap-2.5">
+              <span className="text-base text-text-muted line-through">
+                {formatPrice(oldPrice)}
+              </span>
+              <Badge variant="danger" size="discount">
+                −{discountPercent}%
+              </Badge>
+            </div>
           ) : null}
-          {discountPercent ? <Badge variant="danger">-{discountPercent}%</Badge> : null}
+
+          {oldPrice && savedAmount > 0 ? (
+            <div className="inline-flex w-fit items-center gap-1.5 rounded-[10px] bg-success/12 px-3 py-2 text-[13.5px] font-medium text-success">
+              <Tag className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              <span>
+                {t("product.savingsPrefix")} {formatPrice(savedAmount)} {t("common.currency")}{" "}
+                {t("product.savingsSuffix")}
+              </span>
+            </div>
+          ) : null}
         </div>
 
-        {savedAmount > 0 ? (
-          <div className="mt-3 inline-flex items-center rounded-chip bg-success/10 px-3 py-1.5 text-sm font-medium text-success">
-            {t("product.savingsPrefix")} {formatPrice(savedAmount)}{" "}
-            {t("common.currency")} {t("product.savingsSuffix")}
+        {isLowStock ? (
+          <div className="mt-5 flex items-start gap-3 rounded-[12px] bg-warning/10 px-3.5 py-3">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-warning/20 text-warning">
+              <Flame className="h-4 w-4" aria-hidden />
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-text">
+                {t("product.lowStock.bannerTitle", { count: product.stock })}
+              </p>
+              <p className="mt-0.5 text-xs text-text-muted">
+                {t("product.lowStock.bannerSubtitle")}
+              </p>
+            </div>
           </div>
         ) : null}
 
@@ -95,7 +139,7 @@ export function ProductInfoSheet({
 
         <div>
           <p
-            className={`text-[15px] leading-[1.6] text-text ${
+            className={`text-[15px] leading-[1.65] text-text ${
               descriptionExpanded ? "" : "line-clamp-4"
             }`}
           >

@@ -38,7 +38,10 @@ export function CartSummary() {
 
       {promo.status === "ok" ? (
         <div className="flex items-center justify-between">
-          <span className="text-text-muted">{t("cart.summary.promo")}</span>
+          <span className="text-text-muted">
+            {t("cart.summary.promo")}{" "}
+            <span className="font-mono text-xs">({promo.code})</span>
+          </span>
           <span className="text-success">
             −{formatPrice(promo.discount)} {t("common.currency")}
           </span>

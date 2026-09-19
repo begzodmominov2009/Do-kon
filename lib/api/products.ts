@@ -118,6 +118,7 @@ function mapProduct(row: ProductRow): Product {
     images,
     imageUrl: images[0]?.url ?? null,
     inStock: row.stock > 0,
+    stock: row.stock,
     specs: [],
     colors: [],
   };

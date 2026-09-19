@@ -6,7 +6,6 @@ import { useTranslation } from "@/lib/i18n";
 import { Container } from "@/components/layout/Container";
 import { ToastViewport } from "@/components/ui/Toast";
 import { useOrdersStore } from "@/store/orders";
-import { ProfileCard } from "./ProfileCard";
 import { ProfileStats } from "./ProfileStats";
 import { ProfileSectionLabel } from "./ProfileSectionLabel";
 import { LanguageSetting } from "./LanguageSetting";
@@ -21,7 +20,6 @@ export function ProfileContent() {
     <Container className="flex flex-col gap-7 py-4 pb-8">
       <h1 className="text-xl font-bold text-text">{t("profile.title")}</h1>
 
-      <ProfileCard />
       <ProfileStats />
 
       <Link

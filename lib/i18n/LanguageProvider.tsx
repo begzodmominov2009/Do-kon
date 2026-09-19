@@ -24,7 +24,13 @@ function isLocale(value: string): value is Locale {
   return value === "uz" || value === "en" || value === "ru";
 }
 
-function resolveMessage(messages: Messages, key: string): string {
+type TranslateParams = Record<string, string | number>;
+
+// Replaces "{{name}}" placeholders in a resolved message with values from
+// params — e.g. resolveMessage(messages, "product.lowStock.card", { count: 3 }).
+// Existing single-argument callers are unaffected: without params, a message
+// with no placeholders is returned as-is.
+function resolveMessage(messages: Messages, key: string, params?: TranslateParams): string {
   const parts = key.split(".");
   let current: unknown = messages;
 
@@ -36,7 +42,12 @@ function resolveMessage(messages: Messages, key: string): string {
     }
   }
 
-  return typeof current === "string" ? current : key;
+  if (typeof current !== "string") return key;
+  if (!params) return current;
+
+  return current.replace(/\{\{(\w+)\}\}/g, (match, name: string) =>
+    name in params ? String(params[name]) : match,
+  );
 }
 
 type Listener = () => void;
@@ -70,7 +81,7 @@ function storeLocale(next: Locale) {
 type LanguageContextValue = {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: TranslateParams) => string;
 };
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
@@ -86,7 +97,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = locale;
   }, [locale]);
 
-  const t = (key: string) => resolveMessage(messagesByLocale[locale], key);
+  const t = (key: string, params?: TranslateParams) =>
+    resolveMessage(messagesByLocale[locale], key, params);
 
   return (
     <LanguageContext.Provider value={{ locale, setLocale: storeLocale, t }}>

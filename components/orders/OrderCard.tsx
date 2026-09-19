@@ -2,11 +2,11 @@
 
 import { useRef } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { ProductImage } from "@/components/shared/ProductImage";
 import { useTranslation, type Locale } from "@/lib/i18n";
 import { formatPrice } from "@/lib/utils/formatPrice";
-import type { Order, OrderStatus } from "@/store/orders";
+import type { Order } from "@/store/orders";
 
 const LOCALE_TAG: Record<Locale, string> = {
   uz: "uz-UZ",
@@ -22,24 +22,6 @@ function formatOrderDate(timestamp: number, locale: Locale): string {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(timestamp));
-}
-
-function StatusBadge({ status, label }: { status: OrderStatus; label: string }) {
-  if (status === "new") return <Badge variant="accent">{label}</Badge>;
-  if (status === "delivered") return <Badge variant="success">{label}</Badge>;
-  if (status === "cancelled") return <Badge variant="danger">{label}</Badge>;
-  if (status === "accepted") {
-    return (
-      <span className="inline-flex items-center rounded-chip bg-blue-600 px-2 py-0.5 text-xs font-semibold text-white dark:bg-blue-500">
-        {label}
-      </span>
-    );
-  }
-  return (
-    <span className="inline-flex items-center rounded-chip bg-amber-500 px-2 py-0.5 text-xs font-semibold text-black dark:bg-amber-400">
-      {label}
-    </span>
-  );
 }
 
 function DetailLabel({ children }: { children: string }) {
@@ -82,21 +64,19 @@ export function OrderCard({ order, isOpen, onToggle }: OrderCardProps) {
         }}
         className="flex w-full cursor-pointer flex-col gap-3 p-4 text-left"
       >
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-sm font-semibold text-text">#{order.number}</span>
-          <StatusBadge status={order.status} label={t(`profile.orders.status.${order.status}`)} />
-        </div>
+        <span className="text-sm font-semibold text-text">#{order.number}</span>
 
         <p className="text-xs text-text-muted">{formatOrderDate(order.createdAt, locale)}</p>
 
         <div className="flex items-center gap-2">
           {visibleItems.map((item, index) => (
-            <span
+            <ProductImage
               key={index}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-input bg-surface-2 text-xl"
-            >
-              {item.emoji}
-            </span>
+              url={item.imageUrl}
+              alt={item.name}
+              className="h-10 w-10 shrink-0 rounded-input"
+              sizes="40px"
+            />
           ))}
           <span className="min-w-0 flex-1 truncate text-sm text-text-muted">
             {visibleItems.map((item) => item.name).join(", ")}
@@ -138,9 +118,12 @@ export function OrderCard({ order, isOpen, onToggle }: OrderCardProps) {
               <div className="flex flex-col gap-3">
                 {order.items.map((item, index) => (
                   <div key={index} className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-input bg-surface-2 text-xl">
-                      {item.emoji}
-                    </span>
+                    <ProductImage
+                      url={item.imageUrl}
+                      alt={item.name}
+                      className="h-10 w-10 shrink-0 rounded-input"
+                      sizes="40px"
+                    />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm text-text">{item.name}</p>
                       {item.colorName ? (

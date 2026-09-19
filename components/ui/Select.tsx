@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Check, ChevronDown, X } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
+import { lockScroll, unlockScroll } from "@/lib/utils/scrollLock";
+
+const CLOSE_TRANSITION_MS = 200;
 
 export type SelectOption = {
   value: string;
@@ -41,6 +44,7 @@ export function Select({
   const hasError = Boolean(errorMessage);
   const errorId = hasError ? `${triggerId}-error` : undefined;
   const selectedOption = options.find((option) => option.value === value);
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const openSheet = () => {
     if (disabled) return;
@@ -49,7 +53,18 @@ export function Select({
     setOpen(true);
   };
 
-  const closeSheet = () => setVisible(false);
+  // transitionend (below) is the normal path to setOpen(false); this timer
+  // is a guaranteed fallback (e.g. prefers-reduced-motion can shrink the
+  // transition enough that the event may not reliably fire) so the sheet
+  // never stays mounted — and blocking clicks — forever.
+  const closeSheet = () => {
+    setVisible(false);
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    closeTimeoutRef.current = setTimeout(() => {
+      closeTimeoutRef.current = null;
+      setOpen(false);
+    }, CLOSE_TRANSITION_MS + 50);
+  };
 
   const selectOption = (optionValue: string) => {
     onChange(optionValue);
@@ -64,11 +79,15 @@ export function Select({
 
   useEffect(() => {
     if (!open) return;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    lockScroll();
+    return () => unlockScroll();
   }, [open]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -147,7 +166,13 @@ export function Select({
           <div
             role="presentation"
             onTransitionEnd={() => {
-              if (!visible) setOpen(false);
+              if (!visible) {
+                if (closeTimeoutRef.current) {
+                  clearTimeout(closeTimeoutRef.current);
+                  closeTimeoutRef.current = null;
+                }
+                setOpen(false);
+              }
             }}
             className={`relative z-10 flex max-h-[70vh] w-full max-w-[520px] flex-col rounded-t-card border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] transition-transform duration-200 ease-out ${
               visible ? "translate-y-0" : "translate-y-full"

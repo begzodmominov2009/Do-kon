@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Heart, Minus, Plus } from "lucide-react";
+import { Flame, Heart, Minus, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { ProductImage } from "@/components/shared/ProductImage";
 import { useTranslation } from "@/lib/i18n";
 import { formatPrice } from "@/lib/utils/formatPrice";
 import { i18nField } from "@/lib/utils/i18nField";
+import { LOW_STOCK_THRESHOLD } from "@/lib/constants";
 import { useCartStore, useCartItemQuantity, getCartItemKey } from "@/store/cart";
 import { useFavoritesStore } from "@/store/favorites";
 import type { Product } from "@/lib/types/product";
@@ -82,6 +83,8 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
   const discountPercent = product.oldPrice
     ? Math.round((1 - product.price / product.oldPrice) * 100)
     : null;
+  const isOutOfStock = product.stock === 0;
+  const isLowStock = product.stock > 0 && product.stock <= LOW_STOCK_THRESHOLD;
 
   return (
     <div className={variant === "rail" ? "w-40 shrink-0" : "w-full"}>
@@ -112,6 +115,17 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
           <ProductImage url={product.imageUrl} alt={productName} className="h-full w-full" />
         </Link>
 
+        {isOutOfStock ? (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 z-[5] flex items-center justify-center bg-black/55"
+          >
+            <span className="rounded-chip bg-black/55 px-3 py-1.5 text-xs font-semibold text-white">
+              {t("product.availability.outOfStock")}
+            </span>
+          </div>
+        ) : null}
+
         <div className="absolute bottom-2 right-2 z-10">
           <div
             className="relative h-9 overflow-hidden rounded-[18px] bg-accent transition-[width] duration-[260ms] ease-[cubic-bezier(0.34,1.2,0.64,1)]"
@@ -119,12 +133,13 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
           >
             <button
               type="button"
-              onClick={() => addItem(product, defaultColor)}
+              onClick={() => !isOutOfStock && addItem(product, defaultColor)}
+              disabled={isOutOfStock}
               aria-label={t("product.add")}
-              className="absolute inset-0 flex items-center justify-center text-white transition-opacity"
+              className="absolute inset-0 flex items-center justify-center text-white transition-opacity disabled:cursor-not-allowed"
               style={{
-                opacity: quantity === 0 ? 1 : 0,
-                pointerEvents: quantity === 0 ? "auto" : "none",
+                opacity: quantity === 0 ? (isOutOfStock ? 0.4 : 1) : 0,
+                pointerEvents: quantity === 0 && !isOutOfStock ? "auto" : "none",
                 transitionDuration: quantity === 0 ? "150ms" : "100ms",
                 transitionDelay: quantity === 0 ? "150ms" : "0ms",
               }}
@@ -152,9 +167,10 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
               <AnimatedQuantity value={quantity} />
               <button
                 type="button"
-                onClick={() => setQty(cartKey, quantity + 1)}
+                onClick={() => !isOutOfStock && setQty(cartKey, quantity + 1)}
+                disabled={isOutOfStock}
                 aria-label={t("product.increase")}
-                className="flex h-6 w-6 items-center justify-center"
+                className="flex h-6 w-6 items-center justify-center disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <Plus className="h-3.5 w-3.5" />
               </button>
@@ -164,7 +180,17 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
       </div>
 
       <Link href={`/product/${product.slug}`} className="mt-2 block">
-        <p className="line-clamp-2 min-h-[2.5em] text-sm text-text">
+        <div className="flex h-4 items-center gap-1">
+          {isLowStock ? (
+            <>
+              <Flame className="h-3 w-3 shrink-0 text-warning" aria-hidden />
+              <span className="truncate text-xs font-medium text-warning">
+                {t("product.lowStock.card", { count: product.stock })}
+              </span>
+            </>
+          ) : null}
+        </div>
+        <p className="mt-1 line-clamp-2 min-h-[2.5em] text-sm text-text">
           {productName}
         </p>
         <div className="mt-1 flex items-baseline gap-1">

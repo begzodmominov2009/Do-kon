@@ -1,6 +1,6 @@
 "use client";
 
-import type { ChangeEvent, ReactNode } from "react";
+import { type ChangeEvent, type ReactNode } from "react";
 import {
   FileText,
   Home,
@@ -13,6 +13,7 @@ import {
 import { useTranslation } from "@/lib/i18n";
 import { Select } from "@/components/ui/Select";
 import { regions } from "@/lib/data/regions";
+import { formatPhoneDigits } from "@/lib/utils/formatPhone";
 import { useCartStore, type ContactInfo } from "@/store/cart";
 
 export type ContactErrors = Partial<Record<keyof ContactInfo, string>>;
@@ -21,16 +22,6 @@ type ContactFormProps = {
   errors: ContactErrors;
   onClearError: (field: keyof ContactInfo) => void;
 };
-
-function formatPhoneDigits(digits: string): string {
-  let result = "";
-  if (digits.length > 0) result += `(${digits.slice(0, 2)}`;
-  if (digits.length >= 2) result += ")";
-  if (digits.length > 2) result += ` ${digits.slice(2, 5)}`;
-  if (digits.length > 5) result += `-${digits.slice(5, 7)}`;
-  if (digits.length > 7) result += `-${digits.slice(7, 9)}`;
-  return result;
-}
 
 export function validateContact(
   contact: ContactInfo,

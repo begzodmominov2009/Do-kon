@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 import { Button } from "@/components/ui/Button";
 import { Switch } from "@/components/ui/Switch";
+import { lockScroll, unlockScroll } from "@/lib/utils/scrollLock";
 
 export type FilterState = {
   minPrice: string;
@@ -27,10 +28,13 @@ type FilterPanelProps = {
   onClose: () => void;
 };
 
+const CLOSE_TRANSITION_MS = 200;
+
 export function FilterPanel({ open, value, onApply, onClose }: FilterPanelProps) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState(value);
   const [visible, setVisible] = useState(false);
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Re-seed the draft from the applied value each time the sheet opens,
   // computed during render rather than in an effect.
@@ -48,37 +52,63 @@ export function FilterPanel({ open, value, onApply, onClose }: FilterPanelProps)
 
   useEffect(() => {
     if (!open) return;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    lockScroll();
+    return () => unlockScroll();
   }, [open]);
+
+  // transitionend (below) is the normal path to onClose(); this timer is a
+  // guaranteed fallback (e.g. prefers-reduced-motion can shrink the
+  // transition enough that the event may not reliably fire) so the panel
+  // never stays mounted — and blocking clicks — forever.
+  const requestClose = () => {
+    setVisible(false);
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    closeTimeoutRef.current = setTimeout(() => {
+      closeTimeoutRef.current = null;
+      onClose();
+    }, CLOSE_TRANSITION_MS + 50);
+  };
 
   useEffect(() => {
     if (!open) return;
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setVisible(false);
+      if (event.key === "Escape") requestClose();
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    };
+  }, []);
 
   if (!open) return null;
 
   const handleClear = () => setDraft(EMPTY_FILTER);
 
+  const handleTransitionEnd = () => {
+    if (!visible) {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+        closeTimeoutRef.current = null;
+      }
+      onClose();
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
       <div
-        onClick={() => setVisible(false)}
+        onClick={requestClose}
         className={`absolute inset-0 bg-black/40 transition-opacity duration-200 ${
           visible ? "opacity-100" : "opacity-0"
         }`}
       />
       <div
-        onTransitionEnd={() => {
-          if (!visible) onClose();
-        }}
+        onTransitionEnd={handleTransitionEnd}
         className={`relative z-10 flex w-full max-w-[520px] flex-col rounded-t-card border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] transition-transform duration-200 ease-out ${
           visible ? "translate-y-0" : "translate-y-full"
         }`}
@@ -87,7 +117,7 @@ export function FilterPanel({ open, value, onApply, onClose }: FilterPanelProps)
           <p className="text-sm font-semibold text-text">{t("catalog.filter.title")}</p>
           <button
             type="button"
-            onClick={() => setVisible(false)}
+            onClick={requestClose}
             aria-label={t("common.close")}
             className="flex h-9 w-9 items-center justify-center rounded-full text-text-muted"
           >
@@ -153,7 +183,7 @@ export function FilterPanel({ open, value, onApply, onClose }: FilterPanelProps)
             fullWidth
             onClick={() => {
               onApply(draft);
-              setVisible(false);
+              requestClose();
             }}
           >
             {t("catalog.filter.apply")}

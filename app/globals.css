@@ -13,6 +13,7 @@
   --accent-soft: rgba(91, 75, 232, 0.1);
   --danger: #dc2626;
   --success: #16a34a;
+  --warning: #f59e0b;
 
   --promo-banner: linear-gradient(135deg, #c0521a, #8a3a12);
   --sale-strip: linear-gradient(100deg, #f2542d, #ff8a3d);
@@ -34,6 +35,7 @@
   --accent-soft: rgba(109, 93, 251, 0.13);
   --danger: #e5342a;
   --success: #22c55e;
+  --warning: #fbbf24;
 
   --background: var(--bg);
   --foreground: var(--text);
@@ -51,6 +53,7 @@
   --color-accent-soft: var(--accent-soft);
   --color-danger: var(--danger);
   --color-success: var(--success);
+  --color-warning: var(--warning);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);

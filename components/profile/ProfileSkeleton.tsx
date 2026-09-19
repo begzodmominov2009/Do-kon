@@ -49,6 +49,7 @@ export function ProfileSkeleton() {
         <div className="divide-y divide-border rounded-card border border-border bg-surface">
           <SkeletonRow />
           <SkeletonRow />
+          <SkeletonRow />
         </div>
       </div>
 

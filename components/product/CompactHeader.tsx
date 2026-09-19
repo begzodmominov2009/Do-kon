@@ -55,7 +55,9 @@ export function CompactHeader({
           onClick={handleAdd}
           aria-label={t("product.add")}
           disabled={!product.inStock}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-white disabled:opacity-40"
+          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full disabled:cursor-not-allowed ${
+            product.inStock ? "bg-accent text-white" : "bg-surface-2 text-text-muted"
+          }`}
         >
           <Plus className="h-4 w-4" />
         </button>

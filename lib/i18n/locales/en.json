@@ -88,7 +88,16 @@
       "apply": "Apply",
       "appliedSuffix": "applied",
       "cancel": "Cancel",
-      "invalid": "Invalid promo code"
+      "invalid": "Invalid promo code",
+      "removedToast": "Promo code removed",
+      "errors": {
+        "notFound": "This promo code doesn't exist",
+        "inactive": "This promo code is no longer active",
+        "expired": "This promo code has expired",
+        "limit": "This promo code has reached its usage limit",
+        "minOrderPrefix": "This promo code applies to orders over",
+        "minOrderSuffix": ""
+      }
     },
     "sections": {
       "delivery": "Delivery method",
@@ -140,7 +149,20 @@
       "confirm": "Clear"
     },
     "checkout": "Place order",
-    "checkoutToast": "Order received"
+    "checkoutToast": "Order received",
+    "checkoutErrors": {
+      "outOfStock": "Some items are out of stock. Please update your cart",
+      "promoInvalid": "The promo code is no longer valid",
+      "validation": "Please check your details",
+      "generic": "Something went wrong. Please try again"
+    }
+  },
+  "order": {
+    "success": {
+      "title": "Order received",
+      "subtitle": "Our operator will contact you shortly",
+      "home": "Go to homepage"
+    }
   },
   "favorites": {
     "title": "Favorites",
@@ -169,10 +191,6 @@
   },
   "profile": {
     "title": "Profile",
-    "guest": {
-      "name": "Guest",
-      "subtitle": "Leave your details to place an order"
-    },
     "stats": {
       "orders": "Orders",
       "cartItems": "In cart",
@@ -196,12 +214,7 @@
     },
     "orders": {
       "sectionTitle": "My orders",
-      "filter": {
-        "all": "All",
-        "active": "Active",
-        "delivered": "Delivered",
-        "cancelled": "Cancelled"
-      },
+      "deviceNotice": "Orders are stored on this device",
       "details": "Details",
       "close": "Close",
       "detail": {
@@ -219,13 +232,6 @@
         "title": "No orders yet",
         "description": "Place your first order",
         "cta": "Browse products"
-      },
-      "status": {
-        "new": "New",
-        "accepted": "Accepted",
-        "shipping": "Shipping",
-        "delivered": "Delivered",
-        "cancelled": "Cancelled"
       },
       "moreItemsSuffix": "more"
     },
@@ -276,6 +282,12 @@
     "availability": {
       "inStock": "In stock",
       "outOfStock": "Out of stock"
+    },
+    "lowStock": {
+      "tag": "Only {{count}} left in stock",
+      "card": "{{count}} left",
+      "bannerTitle": "Hurry! Only {{count}} left",
+      "bannerSubtitle": "May sell out soon"
     },
     "similar": {
       "title": "Similar products"

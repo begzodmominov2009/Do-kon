@@ -92,11 +92,16 @@ export type OrderItem = {
 };
 
 export type PromoCode = {
-  id: string;
+  id: number;
   code: string;
-  discount: number;
+  discount_type: "fixed" | "percent";
+  discount_value: number;
+  min_order: number | null;
+  max_uses: number | null;
+  used_count: number;
   is_active: boolean;
   expires_at: string | null;
+  created_at: string;
 };
 
 export type Database = {

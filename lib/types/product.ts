@@ -36,6 +36,7 @@ export type Product = {
   images: ProductImage[];
   imageUrl: string | null;
   inStock: boolean;
+  stock: number;
   specs: ProductSpec[];
   colors: ProductColor[];
 };
